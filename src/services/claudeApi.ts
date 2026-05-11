@@ -7,7 +7,7 @@ export async function callClaude(messages, systemPrompt) {
     const res = await fetch(`${apiBaseUrl}/api/claude`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages, systemPrompt }),
+      body: JSON.stringify({ messages, system: systemPrompt }),
       signal: controller.signal,
     })
     clearTimeout(timer)

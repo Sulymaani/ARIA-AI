@@ -163,7 +163,8 @@ export default function ARIAApp() {
       const ws = new WebSocket(`${proto}//${window.location.host}/api/speech?lang=${langCode}`)
       wsRef.current = ws
       finalTranscriptRef.current = ""
-      ws.onopen = () => {
+      const startRecorder = () => {
+        if (mediaRecorderRef.current?.state === "recording") return
         const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : "audio/webm"
         const mr = new MediaRecorder(stream, { mimeType })
         mediaRecorderRef.current = mr
@@ -174,13 +175,25 @@ export default function ARIAApp() {
         setIsRecording(true)
       }
       ws.onmessage = e => {
-        const msg = JSON.parse(e.data as string)
+        let msg: { ready?: boolean; error?: string; transcript?: unknown; isFinal?: boolean }
+        try {
+          msg = JSON.parse(e.data as string)
+        } catch {
+          return
+        }
+        if (msg.ready) {
+          startRecorder()
+          return
+        }
         if (msg.error) { console.error("Deepgram:", msg.error); return }
+        if (typeof msg.transcript !== "string") return
+        const transcript = msg.transcript.trim()
+        if (!transcript) return
         if (msg.isFinal) {
-          finalTranscriptRef.current += msg.transcript + " "
+          finalTranscriptRef.current = `${finalTranscriptRef.current}${transcript} `
           setInputText(finalTranscriptRef.current.trim())
         } else {
-          setInputText(finalTranscriptRef.current + msg.transcript)
+          setInputText(`${finalTranscriptRef.current}${transcript}`.trim())
         }
       }
       ws.onerror = () => { setIsRecording(false); stream.getTracks().forEach(t => t.stop()) }
