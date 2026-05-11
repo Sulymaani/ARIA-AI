@@ -55,13 +55,13 @@ export function ComponentRenderer({ components, mode, onOptionSelect, onChipClic
   }
 
   return (
-    <div style={{ display:"flex", gap:16, width:"100%", flexDirection: isBalanced&&ctx ? "row" : "column" }}>
+    <div className="aria-response-layout" style={{ display:"flex", gap:16, width:"100%", flexDirection: isBalanced&&ctx ? "row" : "column" }}>
       <div style={{ flex:1, display:"flex", flexDirection:"column", gap:16 }}>
         {mainComps.map(render)}
         {chips && <div style={{ animation:"fadeUp .35s cubic-bezier(0.22,1,0.36,1) .3s both" }}><ActionChips data={chips} onChipClick={onChipClick}/></div>}
       </div>
       {ctx && (
-        <div style={{ width:280, flexShrink:0, animation:"fadeUp .35s cubic-bezier(0.22,1,0.36,1) .2s both" }}>
+        <div className="aria-response-side" style={{ width:280, flexShrink:0, animation:"fadeUp .35s cubic-bezier(0.22,1,0.36,1) .2s both" }}>
           <ContextPanel data={ctx}/>
         </div>
       )}

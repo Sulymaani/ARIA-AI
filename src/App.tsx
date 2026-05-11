@@ -260,6 +260,7 @@ export default function ARIAApp() {
 
   const queryLabel = (text: string, turnId?: number, isCollapsed?: boolean) => (
     <div
+      className="aria-query-label"
       onClick={turnId !== undefined ? () => toggleCollapse(turnId) : undefined}
       style={{ display:"inline-flex", alignItems:"center", gap:6, background:C.card, border:`1px solid ${C.border}`, borderRadius:8, padding:"5px 11px", marginBottom: isCollapsed ? 0 : 12, color:C.text2, fontSize:12, fontWeight:500, cursor: turnId !== undefined ? "pointer" : "default", userSelect:"none" }}
     >
@@ -272,7 +273,7 @@ export default function ARIAApp() {
   )
 
   return (
-    <div style={{ minHeight:"100vh", height:"100vh", background:`linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),radial-gradient(ellipse 70% 40% at 15% 15%,rgba(0,196,232,.08) 0%,transparent 60%),radial-gradient(ellipse 55% 45% at 85% 80%,rgba(59,130,246,.05) 0%,transparent 60%),${C.navy}`, backgroundSize:"44px 44px,44px 44px,100% 100%,100% 100%,100% 100%", color:C.text, fontFamily:"'Inter',-apple-system,sans-serif", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+    <div className="aria-app" style={{ minHeight:"100vh", height:"100vh", background:`linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),radial-gradient(ellipse 70% 40% at 15% 15%,rgba(0,196,232,.08) 0%,transparent 60%),radial-gradient(ellipse 55% 45% at 85% 80%,rgba(59,130,246,.05) 0%,transparent 60%),${C.navy}`, backgroundSize:"44px 44px,44px 44px,100% 100%,100% 100%,100% 100%", color:C.text, fontFamily:"'Inter',-apple-system,sans-serif", display:"flex", flexDirection:"column", overflow:"hidden" }}>
       <style>{`
         *{box-sizing:border-box;margin:0;padding:0}
         @keyframes orbIdle{0%,100%{transform:scale(1);box-shadow:0 0 0 5px ${C.navy},0 0 0 6px ${C.cyan}22,0 0 40px ${C.cyan}44,0 0 90px ${C.cyan}22}50%{transform:scale(1.06);box-shadow:0 0 0 5px ${C.navy},0 0 0 6px ${C.cyan}33,0 0 65px ${C.cyan}66,0 0 130px ${C.cyan}33}}
@@ -291,7 +292,7 @@ export default function ARIAApp() {
       />
 
       {/* paddingTop outside the zoom so header clearance is unaffected by scale */}
-      <div style={{ flex:1, paddingTop:60, display:"flex", flexDirection:"column", overflow:"hidden" }}>
+      <div className="aria-content-shell" style={{ flex:1, paddingTop:60, display:"flex", flexDirection:"column", overflow:"hidden" }}>
         <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", zoom: textScale as any }}>
 
           {phase==="welcome" && (
@@ -306,8 +307,8 @@ export default function ARIAApp() {
           )}
 
           {(phase==="loading"||phase==="conversation") && (
-            <div ref={threadRef} style={{ flex:1, overflowY:"auto", paddingBottom:80 }}>
-              <div style={{ maxWidth:940, margin:"0 auto", padding:"28px", display:"flex", flexDirection:"column", gap:32 }}>
+            <div ref={threadRef} className="aria-thread" style={{ flex:1, overflowY:"auto", paddingBottom:80 }}>
+              <div className="aria-thread-inner" style={{ maxWidth:940, margin:"0 auto", padding:"28px", display:"flex", flexDirection:"column", gap:32 }}>
 
                 {turns.map((turn, idx) => {
                   const isCollapsed = collapsedTurns.has(turn.id)

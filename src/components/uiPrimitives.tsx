@@ -1,7 +1,7 @@
 import { C, cardBorder, shadow, statusClr, statusLbl } from "../theme"
 
 export function Card({ children, sx = {} }) {
-  return <div style={{
+  return <div className="aria-card" style={{
     background: cardBorder(`${C.cyan}28`),
     border: "1px solid transparent",
     borderRadius: 16,

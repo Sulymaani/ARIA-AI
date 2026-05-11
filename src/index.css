@@ -15,9 +15,235 @@ body,
 body {
   margin: 0;
   font-feature-settings: "ss01", "cv01";
+  overflow: hidden;
+  background: #070d16;
 }
 
 ::selection {
   background: rgba(0, 180, 216, 0.25);
   color: #fff;
+}
+
+.aria-app {
+  min-height: 100vh !important;
+  height: 100vh !important;
+}
+
+.aria-command-input {
+  min-width: 0;
+}
+
+.aria-card,
+.aria-query-label {
+  max-width: 100%;
+}
+
+.aria-card {
+  overflow-wrap: anywhere;
+}
+
+.aria-query-label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.aria-response-layout {
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .aria-shell {
+    height: auto !important;
+    min-height: 98px;
+    align-items: flex-start !important;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 10px 14px !important;
+  }
+
+  .aria-brand {
+    font-size: 20px !important;
+    line-height: 32px;
+    flex: 0 0 100%;
+    text-align: center;
+  }
+
+  .aria-shell-center {
+    order: 3;
+    flex: 0 0 100% !important;
+    justify-content: center !important;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .aria-shell-actions {
+    gap: 7px !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .aria-time {
+    display: none;
+  }
+
+  .aria-content-shell {
+    padding-top: 140px !important;
+  }
+
+  .aria-welcome {
+    justify-content: flex-start !important;
+    overflow-y: auto;
+    padding: 28px 14px 128px !important;
+  }
+
+  .aria-welcome > div:first-child {
+    width: 100%;
+    margin-bottom: 32px !important;
+  }
+
+  .aria-welcome-title {
+    font-size: 30px !important;
+    max-width: 100%;
+    overflow-wrap: normal;
+    text-align: center;
+  }
+
+  .aria-welcome > div:first-child > div:last-child {
+    max-width: 320px !important;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .aria-welcome br {
+    display: none;
+  }
+
+  .aria-orb {
+    width: 112px !important;
+    height: 112px !important;
+  }
+
+  .aria-welcome-input-row {
+    max-width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 8px !important;
+    animation: none !important;
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 210;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    background: rgba(7, 13, 22, 0.92);
+    backdrop-filter: blur(24px) saturate(180%);
+  }
+
+  .aria-thread {
+    padding-bottom: 142px !important;
+  }
+
+  .aria-thread-inner {
+    max-width: 100% !important;
+    padding: 18px 12px !important;
+    gap: 24px !important;
+  }
+
+  .aria-response-layout {
+    flex-direction: column !important;
+  }
+
+  .aria-response-side {
+    width: 100% !important;
+  }
+
+  .aria-card {
+    padding: 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .aria-inputbar {
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .aria-inputbar-status {
+    position: static !important;
+    margin-bottom: 8px;
+  }
+
+  .aria-inputbar-row {
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 8px !important;
+  }
+
+  .aria-mic-button {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .aria-send-button {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .aria-welcome-input-row .aria-send-button,
+  .aria-inputbar-row .aria-send-button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .aria-shell {
+    min-height: 116px;
+  }
+
+  .aria-content-shell {
+    padding-top: 148px !important;
+  }
+
+  .aria-shell-actions {
+    gap: 5px !important;
+  }
+
+  .aria-shell-actions button {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .aria-welcome {
+    padding-top: 20px !important;
+  }
+
+  .aria-welcome-title {
+    font-size: 26px !important;
+  }
+
+  .aria-welcome-input-row {
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .aria-welcome-input-row .aria-command-input {
+    grid-column: 2;
+  }
+
+  .aria-welcome-input-row .aria-send-button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .aria-inputbar-row {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .aria-inputbar-row .aria-send-button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
 }
