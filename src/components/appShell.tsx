@@ -24,7 +24,7 @@ const suggestionChips = [
   { label: "Today's events", prompt: "What events are happening today?", Icon: CalendarDays },
 ]
 
-export function Shell({ mode, language, setLanguage, time, onStartOver, showStartOver }) {
+export function Shell({ mode, language, setLanguage, time, onStartOver, showStartOver, textScale, onTextScaleToggle }) {
   const modeColor = mode ? modeClr(mode) : C.text2
 
   return (
@@ -48,6 +48,13 @@ export function Shell({ mode, language, setLanguage, time, onStartOver, showStar
             Start Over
           </button>
         )}
+        <button
+          onClick={onTextScaleToggle}
+          title={textScale > 1 ? "Normal text size" : "Larger text size"}
+          style={{ background: textScale > 1 ? C.cyan+"22" : "transparent", border:`1px solid ${textScale > 1 ? C.cyan : C.border}`, borderRadius:8, padding:"5px 10px", color: textScale > 1 ? C.cyan : C.text2, fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", letterSpacing:"0.02em" }}
+        >
+          Aa
+        </button>
         <div style={{ display:"flex", gap:2, background:C.card, borderRadius:8, padding:3, border:`1px solid ${C.border}` }}>
           {["EN","BM","ZH"].map(l => (
             <button key={l} onClick={()=>setLanguage(l)} style={{ background: l===language?C.cyan:"transparent", border:"none", borderRadius:6, padding:"4px 10px", color: l===language?C.navy:C.text2, fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s" }}>{l}</button>
@@ -58,7 +65,13 @@ export function Shell({ mode, language, setLanguage, time, onStartOver, showStar
   )
 }
 
-export function WelcomeScreen({ onOrbClick, inputText, setInputText, onSend, isRecording, onMicToggle, micAvailable }) {
+export function WelcomeScreen({ onOrbClick, inputText, setInputText, onSend, isRecording, onMicToggle, micAvailable, urgentPulse }) {
+  const orbAnim = isRecording
+    ? "orbActive 1.2s ease-in-out infinite"
+    : urgentPulse
+      ? "orbUrgent 1.8s ease-in-out infinite"
+      : "orbIdle 3s ease-in-out infinite"
+
   return (
     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", flex:1, padding:"80px 28px 40px" }}>
       <div style={{ textAlign:"center", marginBottom:44, animation:"fadeUp .7s ease" }}>
@@ -69,11 +82,11 @@ export function WelcomeScreen({ onOrbClick, inputText, setInputText, onSend, isR
         </div>
       </div>
 
-      <button onClick={onOrbClick} style={{ width:130, height:130, borderRadius:"50%", border:`1px solid ${C.cyan}66`, background:`radial-gradient(circle at 35% 35%, ${C.cyan}BB, ${C.navy})`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation: isRecording ? "orbActive 1.2s ease-in-out infinite" : "orbIdle 3s ease-in-out infinite", marginBottom:16, userSelect:"none", flexShrink:0, color:C.text }}>
+      <button onClick={onOrbClick} style={{ width:130, height:130, borderRadius:"50%", border:`1px solid ${C.cyan}66`, background:`radial-gradient(circle at 35% 35%, ${C.cyan}BB, ${C.navy})`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", animation: orbAnim, marginBottom:16, userSelect:"none", flexShrink:0, color:C.text }}>
         {isRecording ? <Square size={42} fill="currentColor" /> : <Mic size={46} strokeWidth={1.8} />}
       </button>
-      <div style={{ color: isRecording ? C.red : C.text2, fontSize:14, marginBottom:34, fontWeight: isRecording ? 600 : 400, transition:"color .3s" }}>
-        {isRecording ? "Listening — tap to stop" : "Tap the orb to speak"}
+      <div style={{ color: isRecording ? C.red : urgentPulse ? C.cyan : C.text2, fontSize:14, marginBottom:34, fontWeight: isRecording||urgentPulse ? 600 : 400, transition:"color .3s" }}>
+        {isRecording ? "Listening — tap to stop" : urgentPulse ? "Still here? Tap the orb or type below" : "Tap the orb to speak"}
       </div>
 
       <div style={{ display:"flex", gap:8, width:"100%", maxWidth:600, animation:"fadeUp .7s ease .2s both" }}>
@@ -105,7 +118,7 @@ export function WelcomeScreen({ onOrbClick, inputText, setInputText, onSend, isR
   )
 }
 
-export function InputBar({ onSend, isRecording, onMicToggle, inputText, setInputText, isLoading, micAvailable }) {
+export function InputBar({ onSend, isRecording, onMicToggle, inputText, setInputText, isLoading, micAvailable, inputRef }) {
   return (
     <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:200, background:C.navy+"F0", backdropFilter:"blur(16px)", borderTop:`1px solid ${C.border}`, padding:"12px 24px", boxShadow:"0 -12px 30px rgba(0,0,0,.14)" }}>
       <div style={{ position:"absolute", top:-26, left:24, display:"flex", alignItems:"center", gap:5, color:C.text2, fontSize:11 }}>
@@ -119,7 +132,9 @@ export function InputBar({ onSend, isRecording, onMicToggle, inputText, setInput
         ) : (
           <div style={{ width:46, height:46, borderRadius:"50%", background:C.card, border:`2px solid ${C.border}`, color:C.text2, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }} aria-label="Voice input unavailable"><MicOff size={19} /></div>
         )}
-        <input value={inputText} onChange={e=>setInputText(e.target.value)} onKeyDown={e=>e.key==="Enter"&&!isLoading&&inputText.trim()&&onSend(inputText)}
+        <input
+          ref={inputRef}
+          value={inputText} onChange={e=>setInputText(e.target.value)} onKeyDown={e=>e.key==="Enter"&&!isLoading&&inputText.trim()&&onSend(inputText)}
           disabled={isLoading}
           placeholder={isRecording ? "Listening — speak now, then stop recording" : "Type or speak your follow-up question"}
           style={{ flex:1, background:C.card, border:`1.5px solid ${isRecording?C.cyan:C.border}`, borderRadius:12, padding:"12px 16px", color:C.text, fontSize:15, outline:"none", fontFamily:"inherit", transition:"border-color .25s" }}
