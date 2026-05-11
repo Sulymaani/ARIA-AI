@@ -24,7 +24,7 @@ const suggestionChips = [
   { label: "Today's events", prompt: "What events are happening today?", Icon: CalendarDays },
 ]
 
-export function Shell({ mode, language, setLanguage, time }) {
+export function Shell({ mode, language, setLanguage, time, onStartOver, showStartOver }) {
   const modeColor = mode ? modeClr(mode) : C.text2
 
   return (
@@ -36,8 +36,18 @@ export function Shell({ mode, language, setLanguage, time }) {
           {mode || "idle"}
         </div>
       </div>
-      <div style={{ display:"flex", alignItems:"center", gap:16 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:12 }}>
         <div style={{ color:C.text2, fontSize:12, fontWeight:500 }}>{time}</div>
+        {showStartOver && (
+          <button
+            onClick={onStartOver}
+            style={{ background:"transparent", border:`1px solid ${C.border}`, borderRadius:8, padding:"5px 12px", color:C.text2, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", letterSpacing:"0.04em" }}
+            onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.borderColor=C.cyan;(e.currentTarget as HTMLButtonElement).style.color=C.cyan}}
+            onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.borderColor=C.border;(e.currentTarget as HTMLButtonElement).style.color=C.text2}}
+          >
+            Start Over
+          </button>
+        )}
         <div style={{ display:"flex", gap:2, background:C.card, borderRadius:8, padding:3, border:`1px solid ${C.border}` }}>
           {["EN","BM","ZH"].map(l => (
             <button key={l} onClick={()=>setLanguage(l)} style={{ background: l===language?C.cyan:"transparent", border:"none", borderRadius:6, padding:"4px 10px", color: l===language?C.navy:C.text2, fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s" }}>{l}</button>
