@@ -49,7 +49,10 @@ export default function ARIAApp() {
   const [collapsedTurns, setCollapsedTurns] = useState<Set<number>>(new Set())
   const [welcomeUrgentPulse, setWelcomeUrgentPulse] = useState(false)
 
-  const recRef = useRef(null)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const wsRef = useRef<WebSocket | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+  const finalTranscriptRef = useRef("")
   const turnIdRef = useRef(0)
   const threadRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -66,8 +69,8 @@ export default function ARIAApp() {
     tick(); const id = setInterval(tick,30000); return ()=>clearInterval(id)
   }, [])
 
-  // mic check
-  useEffect(() => { if ("SpeechRecognition" in window||"webkitSpeechRecognition" in window) setMicAvailable(true) }, [])
+  // mic check — requires getUserMedia (Deepgram path)
+  useEffect(() => { setMicAvailable(typeof navigator.mediaDevices?.getUserMedia === "function") }, [])
 
   // cleanup all timers on unmount
   useEffect(() => {
@@ -107,6 +110,9 @@ export default function ARIAApp() {
   }, [turns, phase])
 
   const handleReset = useCallback(() => {
+    mediaRecorderRef.current?.stop()
+    wsRef.current?.close()
+    streamRef.current?.getTracks().forEach(t => t.stop())
     clearTimeout(idleTimerRef.current!)
     clearInterval(countdownRef.current!)
     setPhase("welcome")
@@ -139,22 +145,53 @@ export default function ARIAApp() {
     }, 60_000)
   }, [handleReset])
 
-  // recording
+  // recording — Deepgram Nova-2 via MediaRecorder + WebSocket proxy
   const toggleRecording = useCallback(() => {
     if (!micAvailable) return
-    if (isRecording) { recRef.current?.stop(); setIsRecording(false); return }
-    const SR = (window as any).SpeechRecognition||(window as any).webkitSpeechRecognition
-    const rec = new SR()
-    rec.continuous=false; rec.interimResults=true; rec.lang="en-US"
-    rec.onresult = e => setInputText(Array.from(e.results).map((r:any)=>r[0].transcript).join(""))
-    rec.onend = () => setIsRecording(false)
-    rec.onerror = () => setIsRecording(false)
-    recRef.current=rec; rec.start(); setIsRecording(true)
-  }, [isRecording, micAvailable])
+    if (isRecording) {
+      mediaRecorderRef.current?.stop()
+      wsRef.current?.close()
+      streamRef.current?.getTracks().forEach(t => t.stop())
+      setIsRecording(false)
+      return
+    }
+    const langMap: Record<string, string> = { EN: "en", BM: "ms", ZH: "zh" }
+    const langCode = langMap[language] || "en"
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      streamRef.current = stream
+      const proto = window.location.protocol === "https:" ? "wss:" : "ws:"
+      const ws = new WebSocket(`${proto}//${window.location.host}/api/speech?lang=${langCode}`)
+      wsRef.current = ws
+      finalTranscriptRef.current = ""
+      ws.onopen = () => {
+        const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : "audio/webm"
+        const mr = new MediaRecorder(stream, { mimeType })
+        mediaRecorderRef.current = mr
+        mr.ondataavailable = e => {
+          if (e.data.size > 0 && ws.readyState === WebSocket.OPEN) ws.send(e.data)
+        }
+        mr.start(100)
+        setIsRecording(true)
+      }
+      ws.onmessage = e => {
+        const msg = JSON.parse(e.data as string)
+        if (msg.error) { console.error("Deepgram:", msg.error); return }
+        if (msg.isFinal) {
+          finalTranscriptRef.current += msg.transcript + " "
+          setInputText(finalTranscriptRef.current.trim())
+        } else {
+          setInputText(finalTranscriptRef.current + msg.transcript)
+        }
+      }
+      ws.onerror = () => { setIsRecording(false); stream.getTracks().forEach(t => t.stop()) }
+      ws.onclose = () => { setIsRecording(false); stream.getTracks().forEach(t => t.stop()) }
+    }).catch(() => { /* mic permission denied */ })
+  }, [isRecording, micAvailable, language])
 
   const sendQuery = useCallback(async (text: string, baseMsgs: any[]) => {
     if (!text.trim()) return
-    setInputText(""); setIsRecording(false); recRef.current?.stop()
+    mediaRecorderRef.current?.stop(); wsRef.current?.close(); streamRef.current?.getTracks().forEach(t => t.stop())
+    setInputText(""); setIsRecording(false)
     setPendingQuery(text)
     setPhase("loading")
     startIdleTimer()

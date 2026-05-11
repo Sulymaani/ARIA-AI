@@ -12,17 +12,20 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@deepgram/sdk": "latest",
     "cors": "latest",
     "dotenv": "latest",
     "express": "latest",
     "lucide-react": "^1.14.0",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "ws": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@types/ws": "latest",
     "@vitejs/plugin-react": "latest",
     "concurrently": "latest",
     "typescript": "latest",

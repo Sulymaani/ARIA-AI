@@ -1,8 +1,11 @@
 import cors from "cors"
+import { DeepgramClient } from "@deepgram/sdk"
 import dotenv from "dotenv"
 import express from "express"
+import { createServer } from "node:http"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import { WebSocketServer } from "ws"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -69,6 +72,90 @@ app.use((_req, res) => {
   res.sendFile(path.join(distDir, "index.html"))
 })
 
-app.listen(port, () => {
+const server = createServer(app)
+const wss = new WebSocketServer({ noServer: true })
+
+const dgLangMap = { EN: "en", BM: "ms", ZH: "zh" }
+
+server.on("upgrade", (req, socket, head) => {
+  const url = new URL(req.url, `http://${req.headers.host}`)
+  if (url.pathname === "/api/speech") {
+    wss.handleUpgrade(req, socket, head, ws => wss.emit("connection", ws, req))
+  } else {
+    socket.destroy()
+  }
+})
+
+wss.on("connection", async (clientWs, req) => {
+  const apiKey = process.env.DEEPGRAM_API_KEY
+  if (!apiKey) {
+    clientWs.send(JSON.stringify({ error: "Missing DEEPGRAM_API_KEY on the server." }))
+    clientWs.close()
+    return
+  }
+
+  const url = new URL(req.url, `http://${req.headers.host}`)
+  const lang = dgLangMap[url.searchParams.get("lang")] || "en"
+
+  try {
+    const dgClient = new DeepgramClient({ apiKey })
+    const dgLive = await dgClient.listen.v1.createConnection({
+      model: "nova-2",
+      language: lang,
+      punctuate: true,
+      interim_results: true,
+      endpointing: 300,
+      smart_format: true,
+      keywords: ["FSKTM:2", "KL302:1.5", "KL201:1.5", "KL307:1.5"],
+    })
+
+    dgLive.on("open", () => {
+      if (clientWs.readyState === 1) {
+        clientWs.send(JSON.stringify({ ready: true }))
+      }
+    })
+
+    clientWs.on("message", (data, isBinary) => {
+      if (isBinary && dgLive.readyState === 1) dgLive.sendMedia(data)
+    })
+    clientWs.on("close", () => dgLive.close())
+
+    dgLive.on("message", (data) => {
+      if (data.type && data.type !== "Results") return
+      const alt = data.channel?.alternatives?.[0]
+      if (alt?.transcript && clientWs.readyState === 1) {
+        clientWs.send(JSON.stringify({ transcript: alt.transcript, isFinal: data.is_final }))
+      }
+    })
+
+    dgLive.on("error", (err) => {
+      if (clientWs.readyState === 1) {
+        clientWs.send(JSON.stringify({ error: err.message || "Deepgram transcription error" }))
+      }
+    })
+
+    dgLive.on("close", () => {
+      if (clientWs.readyState === 1) clientWs.close()
+    })
+
+    dgLive.connect()
+  } catch (error) {
+    console.error(error)
+    if (clientWs.readyState === 1) {
+      clientWs.send(JSON.stringify({ error: "Could not connect to Deepgram transcription." }))
+      clientWs.close()
+    }
+  }
+})
+
+server.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    console.error(`Port ${port} is already in use. Stop the existing ARIA server or change PORT in .env.`)
+    process.exit(1)
+  }
+  throw error
+})
+
+server.listen(port, () => {
   console.log(`ARIA API server listening on http://127.0.0.1:${port}`)
 })
