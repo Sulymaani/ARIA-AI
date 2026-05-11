@@ -27,7 +27,7 @@ export function ComponentRenderer({ components, mode, onOptionSelect, onChipClic
   const chips = components.find(c=>c.type==="ActionChips")
 
   const render = (comp,i) => {
-    const animStyle = { animation:`fadeUp .45s ease ${i*.1}s both` }
+    const animStyle = { animation:`fadeUp .35s cubic-bezier(0.22,1,0.36,1) ${i*.1}s both` }
     const key = `${comp.type}-${i}`
     switch(comp.type) {
       case "ClarifyCard":     return <div key={key} style={animStyle}><ClarifyCard data={comp} onOptionSelect={onOptionSelect}/></div>
@@ -48,10 +48,10 @@ export function ComponentRenderer({ components, mode, onOptionSelect, onChipClic
     <div style={{ display:"flex", gap:16, width:"100%", flexDirection: isBalanced&&ctx ? "row" : "column" }}>
       <div style={{ flex:1, display:"flex", flexDirection:"column", gap:16 }}>
         {mainComps.map(render)}
-        {chips && <div style={{ animation:"fadeUp .45s ease .3s both" }}><ActionChips data={chips} onChipClick={onChipClick}/></div>}
+        {chips && <div style={{ animation:"fadeUp .35s cubic-bezier(0.22,1,0.36,1) .3s both" }}><ActionChips data={chips} onChipClick={onChipClick}/></div>}
       </div>
       {ctx && (
-        <div style={{ width:280, flexShrink:0, animation:"fadeUp .45s ease .2s both" }}>
+        <div style={{ width:280, flexShrink:0, animation:"fadeUp .35s cubic-bezier(0.22,1,0.36,1) .2s both" }}>
           <ContextPanel data={ctx}/>
         </div>
       )}

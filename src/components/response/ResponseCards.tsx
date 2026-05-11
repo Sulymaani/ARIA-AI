@@ -17,12 +17,17 @@ import {
 } from "lucide-react"
 
 import { C, statusClr, statusLbl } from "../../theme"
+
+function ambientShadow(status: string): string {
+  const clr = statusClr(status)
+  return `inset 0 1px 0 rgba(255,255,255,.07), 0 0 0 1px rgba(0,196,232,.04), 0 32px 80px rgba(0,0,0,.50), 0 4px 24px ${clr}22`
+}
 import { nowMins, toMins } from "../../utils/schedule"
 import { Card, Chip, SectionLabel, StatusBadge } from "../uiPrimitives"
 
 function IconBubble({ children, color = C.cyan }) {
   return (
-    <div style={{ width:42, height:42, borderRadius:12, background:color+"18", border:`1px solid ${color}44`, color, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+    <div style={{ width:42, height:42, borderRadius:12, background:`linear-gradient(135deg, ${color}25, ${color}12)`, border:`1px solid ${color}44`, color, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, boxShadow:`0 0 0 1px ${color}20, 0 4px 10px ${color}12` }}>
       {children}
     </div>
   )
@@ -43,7 +48,7 @@ function CardTitle({ icon, title, subtitle }) {
 export function ClarifyCard({ data, onOptionSelect }) {
   return (
     <Card sx={{ textAlign:"center", padding:"34px 28px" }}>
-      <div style={{ width:52, height:52, margin:"0 auto 14px", borderRadius:"50%", background:C.cyan+"18", border:`1px solid ${C.cyan}55`, color:C.cyan, display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <div style={{ width:60, height:60, margin:"0 auto 18px", borderRadius:18, background:`linear-gradient(145deg, ${C.cyan}28, ${C.cyan}12)`, border:`1px solid ${C.cyan}50`, boxShadow:`0 0 0 6px ${C.cyan}0C, 0 12px 32px ${C.cyan}22`, color:C.cyan, display:"flex", alignItems:"center", justifyContent:"center" }}>
         <MessageCircle size={28} />
       </div>
       <div style={{ fontSize:20, color:C.text, fontWeight:800, marginBottom:20, lineHeight:1.4 }}>{data.question}</div>
@@ -95,7 +100,7 @@ export function StepIndicator({ data }) {
 
 export function RoomCard({ data }) {
   return (
-    <Card>
+    <Card sx={{ boxShadow: ambientShadow(data.status) }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, gap:12 }}>
         <CardTitle
           icon={<IconBubble><Building2 size={22} /></IconBubble>}
@@ -118,7 +123,7 @@ export function RoomCard({ data }) {
 
 export function ProfessorCard({ data }) {
   return (
-    <Card>
+    <Card sx={{ boxShadow: ambientShadow(data.status) }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, gap:12 }}>
         <CardTitle
           icon={<IconBubble><UserRound size={22} /></IconBubble>}
@@ -185,7 +190,7 @@ export function MapThumbnail({ data }) {
       <CardTitle icon={<IconBubble><MapPin size={22} /></IconBubble>} title={data.room_name} subtitle={data.landmark} />
       <div style={{ display:"flex", flexDirection:"column-reverse", gap:6, alignItems:"center", marginTop:18 }}>
         {[1,2,3,4,5].map(f => (
-          <div key={f} style={{ width:"100%", maxWidth:240, minHeight:32, borderRadius:8, background: f===data.floor ? C.cyan : C.border, border:`1px solid ${f===data.floor?C.cyan:C.border}`, display:"flex", alignItems:"center", justifyContent:"center", color: f===data.floor?C.navy:C.text2, fontSize:12, fontWeight: f===data.floor?800:500, transition:"all .3s" }}>
+          <div key={f} style={{ width:"100%", maxWidth:240, minHeight:32, borderRadius:8, background: f===data.floor ? `linear-gradient(135deg, ${C.cyan}E8, ${C.cyan}A0)` : `linear-gradient(135deg, ${C.border}80, ${C.border}40)`, border:`1px solid ${f===data.floor ? C.cyan+"AA" : C.border+"40"}`, boxShadow: f===data.floor ? `0 0 0 1px ${C.cyan}33, 0 4px 20px ${C.cyan}35` : "none", display:"flex", alignItems:"center", justifyContent:"center", color: f===data.floor?C.navy:C.text2, fontSize:12, fontWeight: f===data.floor?800:500, transition:"all .3s" }}>
             {f===data.floor ? <span style={{ display:"inline-flex", alignItems:"center", gap:6 }}><Navigation size={14} /> Floor {f} · You're heading here</span> : `Floor ${f}`}
           </div>
         ))}
@@ -217,7 +222,7 @@ export function StatusDashboard({ data }) {
       <CardTitle icon={<IconBubble><Layers3 size={22} /></IconBubble>} title="Status Overview" subtitle="Current room and professor status" />
       <div style={{ display:"flex", flexDirection:"column", gap:10, marginTop:16 }}>
         {data.rows?.map((row,i) => (
-          <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", borderRadius:12, background:C.navy, border:`1px solid ${C.border}`, gap:12 }}>
+          <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", borderRadius:12, background:C.navy, border:`1px solid ${C.border}`, gap:12, boxShadow:`inset 0 1px 0 rgba(255,255,255,.03), 0 2px 8px ${statusClr(row.status)}10` }}>
             <div>
               <div style={{ color:C.text, fontWeight:700, fontSize:15 }}>{row.name}</div>
               {row.detail && <div style={{ color:C.text2, fontSize:12, marginTop:2 }}>{row.detail}</div>}
@@ -251,7 +256,7 @@ export function OccupancyGrid({ data }) {
                 </td>
                 {row.slots?.map((sl,j) => (
                   <td key={j} style={{ padding:"6px 8px", textAlign:"center", background:C.navy, borderRadius:j === row.slots.length - 1 ? "0 8px 8px 0" : 0 }}>
-                    <div style={{ borderRadius:999, padding:"6px 8px", background: sl==="available"?C.green+"22":C.red+"22", border:`1px solid ${sl==="available"?C.green+"66":C.red+"66"}`, color: sl==="available"?C.green:C.red, fontSize:11, fontWeight:800 }}>
+                    <div style={{ borderRadius:999, padding:"6px 8px", background: sl==="available" ? `linear-gradient(135deg, ${C.green}28, ${C.green}14)` : `linear-gradient(135deg, ${C.red}28, ${C.red}14)`, border:`1px solid ${sl==="available" ? C.green+"55" : C.red+"55"}`, boxShadow:`0 2px 6px ${sl==="available" ? C.green+"18" : C.red+"18"}`, color: sl==="available"?C.green:C.red, fontSize:11, fontWeight:800 }}>
                       {sl==="available"?"Free":"Busy"}
                     </div>
                   </td>
@@ -270,8 +275,8 @@ export function ActionChips({ data, onChipClick }) {
     <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
       {data.chips?.map((chip,i) => (
         <button key={i} onClick={() => onChipClick(chip.label)} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:20, padding:"8px 16px", color:C.text2, fontSize:13, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", fontWeight:700 }}
-          onMouseEnter={e=>{e.currentTarget.style.borderColor=C.cyan;e.currentTarget.style.color=C.cyan}}
-          onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.color=C.text2}}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor=C.cyan;e.currentTarget.style.color=C.cyan;e.currentTarget.style.boxShadow=`0 2px 12px ${C.cyan}20`}}
+          onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.color=C.text2;e.currentTarget.style.boxShadow="none"}}
         >{chip.label}</button>
       ))}
     </div>
@@ -284,7 +289,7 @@ export function EventList({ data }) {
       <CardTitle icon={<IconBubble><CalendarDays size={22} /></IconBubble>} title="Today's Events at FSKTM" subtitle="Events currently listed for today" />
       <div style={{ display:"flex", flexDirection:"column", gap:12, marginTop:16 }}>
         {data.events?.map((ev,i) => (
-          <div key={i} style={{ padding:"14px 16px", borderRadius:12, background:C.navy, border:`1px solid ${C.border}` }}>
+          <div key={i} style={{ padding:"14px 16px", borderRadius:12, background:`linear-gradient(165deg, ${C.card} 0%, #050E1A 100%)`, border:`1px solid ${C.border}`, boxShadow:"inset 0 1px 0 rgba(255,255,255,.05), 0 4px 16px rgba(0,0,0,.25)" }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12 }}>
               <div style={{ color:C.text, fontWeight:700, fontSize:15 }}>{ev.title}</div>
               <div style={{ color:C.cyan, fontSize:12, fontWeight:700, whiteSpace:"nowrap" }}>{ev.from} - {ev.to}</div>
@@ -302,7 +307,7 @@ export function EventList({ data }) {
 export function OutOfScopeCard({ data }) {
   return (
     <Card sx={{ textAlign:"center", padding:"36px 28px" }}>
-      <div style={{ width:52, height:52, margin:"0 auto 14px", borderRadius:"50%", background:C.red+"18", border:`1px solid ${C.red}55`, color:C.red, display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <div style={{ width:60, height:60, margin:"0 auto 18px", borderRadius:18, background:`linear-gradient(145deg, ${C.red}28, ${C.red}12)`, border:`1px solid ${C.red}50`, boxShadow:`0 0 0 6px ${C.red}0C, 0 12px 32px ${C.red}22`, color:C.red, display:"flex", alignItems:"center", justifyContent:"center" }}>
         <HelpCircle size={28} />
       </div>
       <div style={{ color:C.text, fontSize:17, fontWeight:600, marginBottom:10, lineHeight:1.5 }}>{data.message}</div>

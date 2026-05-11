@@ -222,16 +222,16 @@ export default function ARIAApp() {
   )
 
   return (
-    <div style={{ minHeight:"100vh", height:"100vh", background:C.navy, color:C.text, fontFamily:"'Inter',-apple-system,sans-serif", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+    <div style={{ minHeight:"100vh", height:"100vh", background:`linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),radial-gradient(ellipse 70% 40% at 15% 15%,rgba(0,196,232,.08) 0%,transparent 60%),radial-gradient(ellipse 55% 45% at 85% 80%,rgba(59,130,246,.05) 0%,transparent 60%),${C.navy}`, backgroundSize:"44px 44px,44px 44px,100% 100%,100% 100%,100% 100%", color:C.text, fontFamily:"'Inter',-apple-system,sans-serif", display:"flex", flexDirection:"column", overflow:"hidden" }}>
       <style>{`
         *{box-sizing:border-box;margin:0;padding:0}
-        @keyframes orbIdle{0%,100%{transform:scale(1);box-shadow:0 0 40px ${C.cyan}44,0 0 90px ${C.cyan}22}50%{transform:scale(1.06);box-shadow:0 0 65px ${C.cyan}66,0 0 130px ${C.cyan}33}}
-        @keyframes orbActive{0%,100%{transform:scale(1);box-shadow:0 0 30px ${C.red}66}50%{transform:scale(1.08);box-shadow:0 0 55px ${C.red}99}}
-        @keyframes orbUrgent{0%,100%{transform:scale(1);box-shadow:0 0 60px ${C.cyan}77,0 0 140px ${C.cyan}44}50%{transform:scale(1.1);box-shadow:0 0 90px ${C.cyan}AA,0 0 180px ${C.cyan}55}}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes orbIdle{0%,100%{transform:scale(1);box-shadow:0 0 0 5px ${C.navy},0 0 0 6px ${C.cyan}22,0 0 40px ${C.cyan}44,0 0 90px ${C.cyan}22}50%{transform:scale(1.06);box-shadow:0 0 0 5px ${C.navy},0 0 0 6px ${C.cyan}33,0 0 65px ${C.cyan}66,0 0 130px ${C.cyan}33}}
+        @keyframes orbActive{0%,100%{transform:scale(1);box-shadow:0 0 0 5px ${C.navy},0 0 0 6px ${C.red}22,0 0 30px ${C.red}66}50%{transform:scale(1.08);box-shadow:0 0 0 5px ${C.navy},0 0 0 6px ${C.red}33,0 0 55px ${C.red}99}}
+        @keyframes orbUrgent{0%,100%{transform:scale(1);box-shadow:0 0 0 5px ${C.navy},0 0 0 6px ${C.cyan}33,0 0 60px ${C.cyan}77,0 0 140px ${C.cyan}44}50%{transform:scale(1.1);box-shadow:0 0 0 5px ${C.navy},0 0 0 6px ${C.cyan}55,0 0 90px ${C.cyan}AA,0 0 180px ${C.cyan}55}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
         input::placeholder{color:${C.text2}}
         input{caret-color:${C.cyan}}
-        ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:${C.navy}}::-webkit-scrollbar-thumb{background:${C.border};border-radius:2px}
+        ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(42,59,77,.8);border-radius:2px}::-webkit-scrollbar-thumb:hover{background:rgba(0,180,216,.35)}
       `}</style>
 
       <Shell

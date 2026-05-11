@@ -14,4 +14,10 @@ body,
 
 body {
   margin: 0;
+  font-feature-settings: "ss01", "cv01";
+}
+
+::selection {
+  background: rgba(0, 180, 216, 0.25);
+  color: #fff;
 }
