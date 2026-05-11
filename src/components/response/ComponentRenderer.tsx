@@ -1,10 +1,15 @@
 import type { AriAMode, AriaComponent } from "../../types/aria"
 import {
   ActionChips,
+  AnswerCard,
   ClarifyCard,
+  ComparisonTable,
   ContextPanel,
+  ContactCard,
+  DirectoryList,
   EventList,
   MapThumbnail,
+  MetricStrip,
   OccupancyGrid,
   OutOfScopeCard,
   ProfessorCard,
@@ -37,6 +42,11 @@ export function ComponentRenderer({ components, mode, onOptionSelect, onChipClic
       case "OccupancyGrid":   return <div key={key} style={animStyle}><OccupancyGrid data={comp}/></div>
       case "Timeline":        return <div key={key} style={animStyle}><Timeline data={comp}/></div>
       case "MapThumbnail":    return <div key={key} style={animStyle}><MapThumbnail data={comp}/></div>
+      case "AnswerCard":      return <div key={key} style={animStyle}><AnswerCard data={comp}/></div>
+      case "ContactCard":     return <div key={key} style={animStyle}><ContactCard data={comp}/></div>
+      case "DirectoryList":   return <div key={key} style={animStyle}><DirectoryList data={comp}/></div>
+      case "MetricStrip":     return <div key={key} style={animStyle}><MetricStrip data={comp}/></div>
+      case "ComparisonTable": return <div key={key} style={animStyle}><ComparisonTable data={comp}/></div>
       case "StatusDashboard": return <div key={key} style={animStyle}><StatusDashboard data={comp}/></div>
       case "EventList":       return <div key={key} style={animStyle}><EventList data={comp}/></div>
       case "OutOfScopeCard":  return <div key={key} style={animStyle}><OutOfScopeCard data={comp}/></div>

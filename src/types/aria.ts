@@ -5,6 +5,7 @@ export type AriaIntent =
   | "professor_finding"
   | "room_availability"
   | "schedule"
+  | "faculty_info"
   | "out_of_scope"
 
 export type AriaStatus =
@@ -92,6 +93,57 @@ export type ContextPanelData = {
   items: { label: string; value: string }[]
 }
 
+export type AnswerCardData = {
+  type: "AnswerCard"
+  title: string
+  answer: string
+  facts?: { label: string; value: string }[]
+  tone?: "info" | "success" | "warning"
+}
+
+export type ContactCardData = {
+  type: "ContactCard"
+  name: string
+  role: string
+  email: string
+  office: string
+  department: string
+  research?: string | null
+}
+
+export type DirectoryListData = {
+  type: "DirectoryList"
+  title: string
+  subtitle?: string | null
+  items: {
+    id: string
+    label: string
+    detail: string | null
+    meta?: string[]
+    status?: AriaStatus | string | null
+  }[]
+}
+
+export type MetricStripData = {
+  type: "MetricStrip"
+  metrics: {
+    label: string
+    value: string
+    detail?: string | null
+    status?: AriaStatus | string | null
+  }[]
+}
+
+export type ComparisonTableData = {
+  type: "ComparisonTable"
+  title: string
+  columns: string[]
+  rows: {
+    label: string
+    values: string[]
+  }[]
+}
+
 export type StatusDashboardData = {
   type: "StatusDashboard"
   rows: {
@@ -147,6 +199,11 @@ export type AriaComponent =
   | TimelineData
   | MapThumbnailData
   | ContextPanelData
+  | AnswerCardData
+  | ContactCardData
+  | DirectoryListData
+  | MetricStripData
+  | ComparisonTableData
   | StatusDashboardData
   | OccupancyGridData
   | ActionChipsData

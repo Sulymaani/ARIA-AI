@@ -1,6 +1,7 @@
 import { useState } from "react"
 import {
   BookOpen,
+  BarChart3,
   Building2,
   CalendarDays,
   Check,
@@ -9,10 +10,13 @@ import {
   HelpCircle,
   Info,
   Layers3,
+  List,
+  Mail,
   MapPin,
   MessageCircle,
   Navigation,
   Search,
+  Table2,
   UserRound,
 } from "lucide-react"
 
@@ -211,6 +215,122 @@ export function ContextPanel({ data }) {
             <div style={{ color:C.text, fontSize:14, marginTop:4, lineHeight:1.4 }}>{item.value}</div>
           </div>
         ))}
+      </div>
+    </Card>
+  )
+}
+
+export function AnswerCard({ data }) {
+  const toneColor = data.tone === "success" ? C.green : data.tone === "warning" ? C.yellow : C.cyan
+  return (
+    <Card>
+      <CardTitle icon={<IconBubble color={toneColor}><Info size={22} /></IconBubble>} title={data.title} subtitle={data.answer} />
+      {data.facts?.length > 0 && (
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))", gap:10, marginTop:16 }}>
+          {data.facts.map((fact,i) => (
+            <div key={i} style={{ padding:"12px 14px", borderRadius:10, background:C.navy, border:`1px solid ${C.border}` }}>
+              <div style={{ color:C.text2, fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", fontWeight:800 }}>{fact.label}</div>
+              <div style={{ color:C.text, fontSize:16, marginTop:4, fontWeight:800 }}>{fact.value}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  )
+}
+
+export function ContactCard({ data }) {
+  return (
+    <Card>
+      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, marginBottom:16 }}>
+        <CardTitle icon={<IconBubble><UserRound size={22} /></IconBubble>} title={data.name} subtitle={`${data.role} - ${data.department}`} />
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(190px, 1fr))", gap:10 }}>
+        <div style={{ padding:"13px 14px", borderRadius:10, background:C.navy, border:`1px solid ${C.border}` }}>
+          <div style={{ color:C.text2, fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", fontWeight:800, marginBottom:6 }}>Email</div>
+          <div style={{ color:C.text, fontSize:15, fontWeight:800, display:"flex", alignItems:"center", gap:8, wordBreak:"break-word" }}><Mail size={15} /> {data.email}</div>
+        </div>
+        <div style={{ padding:"13px 14px", borderRadius:10, background:C.navy, border:`1px solid ${C.border}` }}>
+          <div style={{ color:C.text2, fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", fontWeight:800, marginBottom:6 }}>Office</div>
+          <div style={{ color:C.text, fontSize:15, fontWeight:800, display:"flex", alignItems:"center", gap:8 }}><MapPin size={15} /> {data.office}</div>
+        </div>
+      </div>
+      {data.research && (
+        <div style={{ marginTop:12, color:C.text2, fontSize:13, lineHeight:1.5 }}>
+          <span style={{ color:C.text, fontWeight:800 }}>Research: </span>{data.research}
+        </div>
+      )}
+    </Card>
+  )
+}
+
+export function DirectoryList({ data }) {
+  return (
+    <Card>
+      <CardTitle icon={<IconBubble><List size={22} /></IconBubble>} title={data.title} subtitle={data.subtitle} />
+      <div style={{ display:"flex", flexDirection:"column", gap:9, marginTop:16 }}>
+        {data.items?.map((item,i) => (
+          <div key={item.id || i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, padding:"12px 14px", borderRadius:10, background:C.navy, border:`1px solid ${C.border}` }}>
+            <div>
+              <div style={{ color:C.text, fontSize:15, fontWeight:800 }}>{item.label}</div>
+              {item.detail && <div style={{ color:C.text2, fontSize:12, marginTop:3, lineHeight:1.4 }}>{item.detail}</div>}
+              {item.meta?.length > 0 && (
+                <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:8 }}>
+                  {item.meta.slice(0,4).map((m,j) => <Chip key={j} label={m} color={C.text2} />)}
+                </div>
+              )}
+            </div>
+            {item.status && <StatusBadge status={item.status} />}
+          </div>
+        ))}
+      </div>
+    </Card>
+  )
+}
+
+export function MetricStrip({ data }) {
+  return (
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))", gap:10 }}>
+      {data.metrics?.slice(0,4).map((metric,i) => {
+        const color = metric.status ? statusClr(metric.status) : C.cyan
+        return (
+          <div key={i} style={{ padding:"15px 16px", borderRadius:12, background:C.card, border:`1px solid ${C.border}`, boxShadow:`inset 0 1px 0 rgba(255,255,255,.06), 0 4px 18px ${color}10` }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:8 }}>
+              <div style={{ color:C.text2, fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", fontWeight:800 }}>{metric.label}</div>
+              <BarChart3 size={15} color={color} />
+            </div>
+            <div style={{ color:C.text, fontSize:26, fontWeight:900, marginTop:7, lineHeight:1 }}>{metric.value}</div>
+            {metric.detail && <div style={{ color:C.text2, fontSize:12, marginTop:6 }}>{metric.detail}</div>}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+export function ComparisonTable({ data }) {
+  return (
+    <Card>
+      <CardTitle icon={<IconBubble><Table2 size={22} /></IconBubble>} title={data.title} subtitle="Side-by-side faculty data comparison" />
+      <div style={{ overflowX:"auto", marginTop:16 }}>
+        <table style={{ width:"100%", borderCollapse:"separate", borderSpacing:"0 6px", fontSize:13 }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign:"left", padding:"4px 8px", color:C.text2, fontWeight:800, minWidth:130 }}>Field</th>
+              {data.columns?.map((col,i) => <th key={i} style={{ textAlign:"left", padding:"4px 8px", color:C.text2, fontWeight:800, minWidth:150 }}>{col}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {data.rows?.map((row,i) => (
+              <tr key={i}>
+                <td style={{ padding:"10px 8px", color:C.text2, fontWeight:800, background:C.navy, borderRadius:"8px 0 0 8px" }}>{row.label}</td>
+                {row.values?.map((value,j) => (
+                  <td key={j} style={{ padding:"10px 8px", color:C.text, background:C.navy, borderRadius:j === row.values.length - 1 ? "0 8px 8px 0" : 0 }}>{value}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </Card>
   )
