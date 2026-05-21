@@ -116,8 +116,8 @@ function makeRoomCard(room): RoomCardData {
     capacity: room.capacity,
     features: room.features,
     status: status.status,
-    occupied_until: status.status === "occupied" ? status.to || null : null,
-    available_from: status.status === "occupied" ? status.to || null : null,
+    occupied_until: status.status === "occupied" ? (status as any).to || null : null,
+    available_from: status.status === "occupied" ? (status as any).to || null : null,
     current_class: status.label || null,
     directions: room.directions,
   }
