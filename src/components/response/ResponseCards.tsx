@@ -136,7 +136,7 @@ export function ProfessorCard({ data, lang = "EN" }) {
         <CardTitle
           icon={
             data.photo
-              ? <img src={data.photo} alt={data.name} style={{ width:42, height:42, borderRadius:12, objectFit:"cover", border:`1px solid ${C.border}`, flexShrink:0 }} onError={e => { (e.currentTarget as HTMLImageElement).style.display="none" }} />
+              ? <img src={data.photo} alt={data.name} style={{ width:68, height:68, borderRadius:"50%", objectFit:"cover", border:`2px solid ${C.border}`, flexShrink:0 }} onError={e => { (e.currentTarget as HTMLImageElement).style.display="none" }} />
               : <IconBubble><UserRound size={22} /></IconBubble>
           }
           title={data.name}
@@ -260,7 +260,7 @@ export function ContactCard({ data, lang = "EN" }) {
         <CardTitle
           icon={
             data.photo
-              ? <img src={data.photo} alt={data.name} style={{ width:42, height:42, borderRadius:12, objectFit:"cover", border:`1px solid ${C.border}`, flexShrink:0 }} onError={e => { (e.currentTarget as HTMLImageElement).style.display="none" }} />
+              ? <img src={data.photo} alt={data.name} style={{ width:68, height:68, borderRadius:"50%", objectFit:"cover", border:`2px solid ${C.border}`, flexShrink:0 }} onError={e => { (e.currentTarget as HTMLImageElement).style.display="none" }} />
               : <IconBubble><UserRound size={22} /></IconBubble>
           }
           title={data.name}
