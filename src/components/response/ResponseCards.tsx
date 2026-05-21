@@ -134,7 +134,11 @@ export function ProfessorCard({ data, lang = "EN" }) {
     <Card sx={{ boxShadow: ambientShadow(data.status) }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, gap:12 }}>
         <CardTitle
-          icon={<IconBubble><UserRound size={22} /></IconBubble>}
+          icon={
+            data.photo
+              ? <img src={data.photo} alt={data.name} style={{ width:42, height:42, borderRadius:12, objectFit:"cover", border:`1px solid ${C.border}`, flexShrink:0 }} onError={e => { (e.currentTarget as HTMLImageElement).style.display="none" }} />
+              : <IconBubble><UserRound size={22} /></IconBubble>
+          }
           title={data.name}
           subtitle={`${data.title} · ${data.department}`}
         />
@@ -253,7 +257,15 @@ export function ContactCard({ data, lang = "EN" }) {
   return (
     <Card>
       <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, marginBottom:16 }}>
-        <CardTitle icon={<IconBubble><UserRound size={22} /></IconBubble>} title={data.name} subtitle={`${data.role} - ${data.department}`} />
+        <CardTitle
+          icon={
+            data.photo
+              ? <img src={data.photo} alt={data.name} style={{ width:42, height:42, borderRadius:12, objectFit:"cover", border:`1px solid ${C.border}`, flexShrink:0 }} onError={e => { (e.currentTarget as HTMLImageElement).style.display="none" }} />
+              : <IconBubble><UserRound size={22} /></IconBubble>
+          }
+          title={data.name}
+          subtitle={`${data.role} - ${data.department}`}
+        />
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(190px, 1fr))", gap:10 }}>
         <div style={{ padding:"13px 14px", borderRadius:10, background:C.navy, border:`1px solid ${C.border}` }}>

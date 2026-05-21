@@ -3,7 +3,7 @@
 // Room assignments are plausible but not officially published.
 // Block A = main building (kiosk here). Block B = theatre/lecture hall wing.
 
-const PHOTO_BASE = "https://fsktm.um.edu.my/fsktm/staff/academic/"
+const PHOTO_BASE = "/photos/"
 
 const ARIA_DATA = {
 

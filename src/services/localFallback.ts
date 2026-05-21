@@ -79,6 +79,7 @@ function makeContactCard(professor) {
     email: professor.email,
     office: professor.office,
     department: professor.department,
+    photo: professor.photo || null,
     research: professor.research || null,
   }
 }
@@ -132,6 +133,7 @@ function makeProfessorCard(professor): ProfessorCardData {
     title: professor.title,
     department: professor.department,
     office: professor.office,
+    photo: professor.photo || null,
     status: status.status,
     status_label: statusLbl(status.status),
     current_activity: status.label || null,

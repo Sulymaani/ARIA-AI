@@ -66,6 +66,7 @@ export type ProfessorCardData = {
   title: string
   department: string
   office: string
+  photo?: string | null
   status: AriaStatus | string
   status_label: string
   current_activity: string | null
@@ -108,6 +109,7 @@ export type ContactCardData = {
   email: string
   office: string
   department: string
+  photo?: string | null
   research?: string | null
 }
 
