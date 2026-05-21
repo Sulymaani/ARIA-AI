@@ -7,6 +7,7 @@ import { createLocalFallbackResponse } from "./services/localFallback"
 import { buildSystemPrompt } from "./services/systemPrompt"
 import type { AriAMode, AriaComponent, AriaIntent } from "./types/aria"
 import { C } from "./theme"
+import { T } from "./utils/translations"
 
 type Turn = {
   id: number
@@ -21,14 +22,6 @@ function getTurnOpacity(idx: number, total: number): number {
   const distFromLatest = total - 1 - idx
   const steps = [1.0, 0.75, 0.55, 0.40, 0.30]
   return steps[Math.min(distFromLatest, steps.length - 1)]
-}
-
-const intentLabel: Record<string, string> = {
-  room_finding: "Room Finding",
-  professor_finding: "Professor",
-  room_availability: "Room Availability",
-  schedule: "Schedule",
-  out_of_scope: "General",
 }
 
 export default function ARIAApp() {
@@ -224,7 +217,7 @@ export default function ARIAApp() {
     } catch(err) {
       console.error(err)
       const fallback = createLocalFallbackResponse(text, context)
-      const newTurn: Turn = { id: ++turnIdRef.current, query: text, components: fallback.components||[], mode: fallback.mode, intent: (fallback as any).intent||null, error: "ARIA is using local fallback data because the AI service is unavailable." }
+      const newTurn: Turn = { id: ++turnIdRef.current, query: text, components: fallback.components||[], mode: fallback.mode, intent: (fallback as any).intent||null, error: T(language).fallbackError }
       setTurns(prev => [...prev, newTurn].slice(-5))
       setMode(fallback.mode)
       setContext(fallback.context||context)
@@ -303,6 +296,7 @@ export default function ARIAApp() {
               isRecording={isRecording} onMicToggle={toggleRecording}
               micAvailable={micAvailable}
               urgentPulse={welcomeUrgentPulse}
+              language={language}
             />
           )}
 
@@ -321,7 +315,7 @@ export default function ARIAApp() {
                         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
                           <div style={{ flex:1, height:1, background:C.border }} />
                           <span style={{ color:C.text2, fontSize:11, fontWeight:600, letterSpacing:"0.1em", textTransform:"uppercase" }}>
-                            New topic · {intentLabel[turn.intent!] || turn.intent}
+                            {T(language).newTopic} · {(T(language) as any)[`intent_${turn.intent!}`] || turn.intent}
                           </span>
                           <div style={{ flex:1, height:1, background:C.border }} />
                         </div>
@@ -337,13 +331,14 @@ export default function ARIAApp() {
                                   onClick={() => handleRetry(turn)}
                                   style={{ background:"transparent", border:`1px solid ${C.red}`, borderRadius:7, padding:"4px 10px", color:C.red, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"inherit", flexShrink:0, whiteSpace:"nowrap" }}
                                 >
-                                  Try again
+                                  {T(language).tryAgain}
                                 </button>
                               </div>
                             )}
                             <ComponentRenderer
                               components={turn.components}
                               mode={turn.mode}
+                              language={language}
                               onOptionSelect={t => { setInputText(t); inputRef.current?.focus() }}
                               onChipClick={l => handleSend(l)}
                             />
@@ -373,20 +368,20 @@ export default function ARIAApp() {
           onSend={handleSend} isRecording={isRecording} onMicToggle={toggleRecording}
           inputText={inputText} setInputText={setInputText}
           isLoading={phase==="loading"} micAvailable={micAvailable}
-          inputRef={inputRef}
+          inputRef={inputRef} language={language}
         />
       )}
 
       {showIdleOverlay && (
         <div style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,0,.65)", backdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center" }}>
           <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:20, padding:"36px 44px", textAlign:"center", maxWidth:360, boxShadow:"0 30px 80px rgba(0,0,0,.4)", animation:"fadeUp .3s ease" }}>
-            <div style={{ fontSize:15, fontWeight:700, color:C.text, marginBottom:8 }}>Are you still there?</div>
-            <div style={{ fontSize:13, color:C.text2, marginBottom:24 }}>Resetting in {idleCountdown}s...</div>
+            <div style={{ fontSize:15, fontWeight:700, color:C.text, marginBottom:8 }}>{T(language).areYouStillThere}</div>
+            <div style={{ fontSize:13, color:C.text2, marginBottom:24 }}>{T(language).resettingIn(idleCountdown)}</div>
             <button
               onClick={() => { clearInterval(countdownRef.current!); setShowIdleOverlay(false); startIdleTimer() }}
               style={{ background:C.cyan, border:"none", borderRadius:12, padding:"11px 28px", color:C.navy, fontWeight:700, fontSize:14, cursor:"pointer", fontFamily:"inherit" }}
             >
-              Yes, I'm here
+              {T(language).yesImHere}
             </button>
           </div>
         </div>

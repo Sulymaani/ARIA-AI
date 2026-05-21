@@ -25,12 +25,12 @@ export function Chip({ label, color = C.text2, bg = "transparent" }) {
   }}>{label}</span>
 }
 
-export function StatusBadge({ status }) {
+export function StatusBadge({ status, label }: { status: string, label?: string }) {
   const clr = statusClr(status)
   return (
     <span style={{ display:"inline-flex", alignItems:"center", gap:6, background:`linear-gradient(135deg, ${clr}22, ${clr}0E)`, border:`1px solid ${clr}66`, borderRadius:999, padding:"5px 10px", color:clr, fontSize:12, fontWeight:700, whiteSpace:"nowrap", boxShadow:`0 0 0 1px ${clr}18, 0 2px 12px ${clr}15` }}>
       <span style={{ width:7, height:7, borderRadius:"50%", background:clr, boxShadow:`0 0 0 3px ${clr}25, 0 0 10px ${clr}`, display:"inline-block", flexShrink:0 }} />
-      {statusLbl(status)}
+      {label ?? statusLbl(status)}
     </span>
   )
 }

@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 
 import { C, statusClr, statusLbl } from "../../theme"
+import { T, statusT } from "../../utils/translations"
 
 function ambientShadow(status: string): string {
   const clr = statusClr(status)
@@ -73,14 +74,15 @@ export function ClarifyCard({ data, onOptionSelect }) {
   )
 }
 
-export function StepIndicator({ data }) {
+export function StepIndicator({ data, lang = "EN" }) {
   const [step, setStep] = useState(0)
+  const t = T(lang)
   return (
     <Card>
       <CardTitle
         icon={<IconBubble><Navigation size={22} /></IconBubble>}
-        title={`Directions to ${data.destination}`}
-        subtitle="Follow the steps in order. Current step is highlighted."
+        title={t.directionsTo(data.destination)}
+        subtitle={t.followSteps}
       />
       <div style={{ display:"flex", flexDirection:"column", gap:12, marginTop:18 }}>
         {data.steps.map((s,i) => (
@@ -94,28 +96,29 @@ export function StepIndicator({ data }) {
       </div>
       <div style={{ marginTop:18 }}>
         {step < data.steps.length - 1
-          ? <button onClick={() => setStep(s=>s+1)} style={{ width:"100%", background:C.cyan, border:"none", borderRadius:10, padding:"13px", color:C.navy, fontWeight:800, fontSize:15, cursor:"pointer", fontFamily:"inherit" }}>Next step</button>
-          : <div style={{ textAlign:"center", color:C.green, fontWeight:800, fontSize:16, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}><Check size={18} /> You have arrived</div>
+          ? <button onClick={() => setStep(s=>s+1)} style={{ width:"100%", background:C.cyan, border:"none", borderRadius:10, padding:"13px", color:C.navy, fontWeight:800, fontSize:15, cursor:"pointer", fontFamily:"inherit" }}>{t.nextStep}</button>
+          : <div style={{ textAlign:"center", color:C.green, fontWeight:800, fontSize:16, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}><Check size={18} /> {t.youHaveArrived}</div>
         }
       </div>
     </Card>
   )
 }
 
-export function RoomCard({ data }) {
+export function RoomCard({ data, lang = "EN" }) {
+  const t = T(lang)
   return (
     <Card sx={{ boxShadow: ambientShadow(data.status) }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, gap:12 }}>
         <CardTitle
           icon={<IconBubble><Building2 size={22} /></IconBubble>}
           title={data.name}
-          subtitle={`Floor ${data.floor} · ${data.type_label} · Capacity ${data.capacity ?? "N/A"}`}
+          subtitle={t.floorTypeCap(data.floor, data.type_label, data.capacity)}
         />
-        <StatusBadge status={data.status} />
+        <StatusBadge status={data.status} label={statusT(lang, data.status)} />
       </div>
-      {data.current_class && <div style={{ color:C.yellow, fontSize:13, marginBottom:10, display:"flex", alignItems:"center", gap:7 }}><BookOpen size={15} /> Currently: {data.current_class}</div>}
-      {data.occupied_until && data.status==="occupied" && <div style={{ color:C.text2, fontSize:13, marginBottom:6 }}>Occupied until {data.occupied_until}</div>}
-      {data.available_from && data.status==="occupied" && <div style={{ color:C.green, fontSize:13, marginBottom:10 }}>Free from {data.available_from}</div>}
+      {data.current_class && <div style={{ color:C.yellow, fontSize:13, marginBottom:10, display:"flex", alignItems:"center", gap:7 }}><BookOpen size={15} /> {t.currentlyClass(data.current_class)}</div>}
+      {data.occupied_until && data.status==="occupied" && <div style={{ color:C.text2, fontSize:13, marginBottom:6 }}>{t.occupiedUntil(data.occupied_until)}</div>}
+      {data.available_from && data.status==="occupied" && <div style={{ color:C.green, fontSize:13, marginBottom:10 }}>{t.freeFrom(data.available_from)}</div>}
       {data.features?.length > 0 && (
         <div style={{ display:"flex", gap:7, flexWrap:"wrap", marginTop:14 }}>
           {data.features.map((f,i) => <Chip key={i} label={f} color={C.text2} />)}
@@ -125,7 +128,8 @@ export function RoomCard({ data }) {
   )
 }
 
-export function ProfessorCard({ data }) {
+export function ProfessorCard({ data, lang = "EN" }) {
+  const t = T(lang)
   return (
     <Card sx={{ boxShadow: ambientShadow(data.status) }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, gap:12 }}>
@@ -134,19 +138,19 @@ export function ProfessorCard({ data }) {
           title={data.name}
           subtitle={`${data.title} · ${data.department}`}
         />
-        <StatusBadge status={data.status} />
+        <StatusBadge status={data.status} label={statusT(lang, data.status)} />
       </div>
       <div style={{ color:C.text2, fontSize:13, marginBottom:10, display:"flex", alignItems:"center", gap:6 }}><MapPin size={14} /> {data.office}</div>
       {data.status_label && <div style={{ color:C.text2, fontSize:14, marginBottom:8 }}>{data.status_label}</div>}
       {data.current_activity && <div style={{ color:C.yellow, fontSize:13, marginBottom:12 }}>Now: {data.current_activity}</div>}
       {data.todays_slots?.length > 0 && (
         <>
-          <SectionLabel>Today's Schedule</SectionLabel>
+          <SectionLabel>{t.todaySchedule}</SectionLabel>
           {data.todays_slots.map((sl,i) => (
             <div key={i} style={{ display:"grid", gridTemplateColumns:"110px 10px 1fr", gap:10, alignItems:"center", marginBottom:7, fontSize:13 }}>
               <span style={{ color:C.text2 }}>{sl.from} - {sl.to}</span>
               <span style={{ width:7, height:7, borderRadius:"50%", background:statusClr(sl.status), flexShrink:0, boxShadow:`0 0 4px ${statusClr(sl.status)}` }} />
-              <span style={{ color:C.text }}>{sl.label || statusLbl(sl.status)}</span>
+              <span style={{ color:C.text }}>{sl.label || statusT(lang, sl.status)}</span>
             </div>
           ))}
         </>
@@ -155,13 +159,15 @@ export function ProfessorCard({ data }) {
   )
 }
 
-export function Timeline({ data }) {
+export function Timeline({ data, lang = "EN" }) {
   const START=8*60, END=19*60, TOTAL=END-START
   const now = nowMins()
+  const t = T(lang)
+  const legendKeys = ["in_office","available","teaching","meeting","occupied"] as const
   return (
     <Card>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14, gap:12 }}>
-        <CardTitle icon={<IconBubble><Clock3 size={22} /></IconBubble>} title={data.entity_name} subtitle={`${data.entity_type} timeline`} />
+        <CardTitle icon={<IconBubble><Clock3 size={22} /></IconBubble>} title={data.entity_name} subtitle={t.timeline_subtitle(data.entity_type)} />
         <span style={{ color:C.cyan, fontSize:12, fontWeight:700, paddingTop:6 }}>{data.current_time}</span>
       </div>
       <div style={{ position:"relative", height:30, borderRadius:8, overflow:"hidden", background:C.navy, marginBottom:8, border:`1px solid ${C.border}` }}>
@@ -178,9 +184,9 @@ export function Timeline({ data }) {
         <span>8:00 AM</span><span>12:00 PM</span><span>3:00 PM</span><span>7:00 PM</span>
       </div>
       <div style={{ display:"flex", gap:14, flexWrap:"wrap" }}>
-        {[["in_office","In Office"],["available","Available"],["teaching","Teaching"],["meeting","Meeting"],["occupied","Occupied"]].map(([s,l]) => (
+        {legendKeys.map(s => (
           <div key={s} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.text2 }}>
-            <div style={{ width:10,height:10,borderRadius:3,background:statusClr(s) }} />{l}
+            <div style={{ width:10,height:10,borderRadius:3,background:statusClr(s) }} />{statusT(lang, s)}
           </div>
         ))}
       </div>
@@ -188,14 +194,15 @@ export function Timeline({ data }) {
   )
 }
 
-export function MapThumbnail({ data }) {
+export function MapThumbnail({ data, lang = "EN" }) {
+  const t = T(lang)
   return (
     <Card>
       <CardTitle icon={<IconBubble><MapPin size={22} /></IconBubble>} title={data.room_name} subtitle={data.landmark} />
       <div style={{ display:"flex", flexDirection:"column-reverse", gap:6, alignItems:"center", marginTop:18 }}>
         {[1,2,3,4,5].map(f => (
           <div key={f} style={{ width:"100%", maxWidth:240, minHeight:32, borderRadius:8, background: f===data.floor ? `linear-gradient(135deg, ${C.cyan}E8, ${C.cyan}A0)` : `linear-gradient(135deg, ${C.border}80, ${C.border}40)`, border:`1px solid ${f===data.floor ? C.cyan+"AA" : C.border+"40"}`, boxShadow: f===data.floor ? `0 0 0 1px ${C.cyan}33, 0 4px 20px ${C.cyan}35` : "none", display:"flex", alignItems:"center", justifyContent:"center", color: f===data.floor?C.navy:C.text2, fontSize:12, fontWeight: f===data.floor?800:500, transition:"all .3s" }}>
-            {f===data.floor ? <span style={{ display:"inline-flex", alignItems:"center", gap:6 }}><Navigation size={14} /> Floor {f} · You're heading here</span> : `Floor ${f}`}
+            {f===data.floor ? <span style={{ display:"inline-flex", alignItems:"center", gap:6 }}><Navigation size={14} /> {t.floorHeadingHere(f)}</span> : `Floor ${f}`}
           </div>
         ))}
       </div>
@@ -204,10 +211,10 @@ export function MapThumbnail({ data }) {
   )
 }
 
-export function ContextPanel({ data }) {
+export function ContextPanel({ data, lang = "EN" }) {
   return (
     <Card>
-      <SectionLabel>Related Info</SectionLabel>
+      <SectionLabel>{T(lang).relatedInfo}</SectionLabel>
       <div style={{ display:"flex", flexDirection:"column", gap:13, marginTop:4 }}>
         {data.items?.map((item,i) => (
           <div key={i} style={{ paddingBottom:i < data.items.length - 1 ? 12 : 0, borderBottom:i < data.items.length - 1 ? `1px solid ${C.border}` : "none" }}>
@@ -239,7 +246,8 @@ export function AnswerCard({ data }) {
   )
 }
 
-export function ContactCard({ data }) {
+export function ContactCard({ data, lang = "EN" }) {
+  const t = T(lang)
   return (
     <Card>
       <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, marginBottom:16 }}>
@@ -247,17 +255,17 @@ export function ContactCard({ data }) {
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(190px, 1fr))", gap:10 }}>
         <div style={{ padding:"13px 14px", borderRadius:10, background:C.navy, border:`1px solid ${C.border}` }}>
-          <div style={{ color:C.text2, fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", fontWeight:800, marginBottom:6 }}>Email</div>
+          <div style={{ color:C.text2, fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", fontWeight:800, marginBottom:6 }}>{t.emailLabel}</div>
           <div style={{ color:C.text, fontSize:15, fontWeight:800, display:"flex", alignItems:"center", gap:8, wordBreak:"break-word" }}><Mail size={15} /> {data.email}</div>
         </div>
         <div style={{ padding:"13px 14px", borderRadius:10, background:C.navy, border:`1px solid ${C.border}` }}>
-          <div style={{ color:C.text2, fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", fontWeight:800, marginBottom:6 }}>Office</div>
+          <div style={{ color:C.text2, fontSize:11, textTransform:"uppercase", letterSpacing:"0.05em", fontWeight:800, marginBottom:6 }}>{t.officeLabel}</div>
           <div style={{ color:C.text, fontSize:15, fontWeight:800, display:"flex", alignItems:"center", gap:8 }}><MapPin size={15} /> {data.office}</div>
         </div>
       </div>
       {data.research && (
         <div style={{ marginTop:12, color:C.text2, fontSize:13, lineHeight:1.5 }}>
-          <span style={{ color:C.text, fontWeight:800 }}>Research: </span>{data.research}
+          <span style={{ color:C.text, fontWeight:800 }}>{t.researchLabel}: </span>{data.research}
         </div>
       )}
     </Card>
@@ -308,15 +316,16 @@ export function MetricStrip({ data }) {
   )
 }
 
-export function ComparisonTable({ data }) {
+export function ComparisonTable({ data, lang = "EN" }) {
+  const t = T(lang)
   return (
     <Card>
-      <CardTitle icon={<IconBubble><Table2 size={22} /></IconBubble>} title={data.title} subtitle="Side-by-side faculty data comparison" />
+      <CardTitle icon={<IconBubble><Table2 size={22} /></IconBubble>} title={data.title} subtitle={t.comparisonSubtitle} />
       <div style={{ overflowX:"auto", marginTop:16 }}>
         <table style={{ width:"100%", borderCollapse:"separate", borderSpacing:"0 6px", fontSize:13 }}>
           <thead>
             <tr>
-              <th style={{ textAlign:"left", padding:"4px 8px", color:C.text2, fontWeight:800, minWidth:130 }}>Field</th>
+              <th style={{ textAlign:"left", padding:"4px 8px", color:C.text2, fontWeight:800, minWidth:130 }}>{t.fieldLabel}</th>
               {data.columns?.map((col,i) => <th key={i} style={{ textAlign:"left", padding:"4px 8px", color:C.text2, fontWeight:800, minWidth:150 }}>{col}</th>)}
             </tr>
           </thead>
@@ -336,10 +345,11 @@ export function ComparisonTable({ data }) {
   )
 }
 
-export function StatusDashboard({ data }) {
+export function StatusDashboard({ data, lang = "EN" }) {
+  const t = T(lang)
   return (
     <Card>
-      <CardTitle icon={<IconBubble><Layers3 size={22} /></IconBubble>} title="Status Overview" subtitle="Current room and professor status" />
+      <CardTitle icon={<IconBubble><Layers3 size={22} /></IconBubble>} title={t.statusOverview} subtitle={t.currentStatus} />
       <div style={{ display:"flex", flexDirection:"column", gap:10, marginTop:16 }}>
         {data.rows?.map((row,i) => (
           <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", borderRadius:12, background:C.navy, border:`1px solid ${C.border}`, gap:12, boxShadow:`inset 0 1px 0 rgba(255,255,255,.03), 0 2px 8px ${statusClr(row.status)}10` }}>
@@ -347,7 +357,7 @@ export function StatusDashboard({ data }) {
               <div style={{ color:C.text, fontWeight:700, fontSize:15 }}>{row.name}</div>
               {row.detail && <div style={{ color:C.text2, fontSize:12, marginTop:2 }}>{row.detail}</div>}
             </div>
-            <StatusBadge status={row.status} />
+            <StatusBadge status={row.status} label={statusT(lang, row.status)} />
           </div>
         ))}
       </div>
@@ -355,15 +365,16 @@ export function StatusDashboard({ data }) {
   )
 }
 
-export function OccupancyGrid({ data }) {
+export function OccupancyGrid({ data, lang = "EN" }) {
+  const t = T(lang)
   return (
     <Card>
-      <CardTitle icon={<IconBubble><Grid3X3 size={22} /></IconBubble>} title={data.title} subtitle="Availability by time block" />
+      <CardTitle icon={<IconBubble><Grid3X3 size={22} /></IconBubble>} title={data.title} subtitle={t.availabilityByTime} />
       <div style={{ overflowX:"auto", marginTop:16 }}>
         <table style={{ width:"100%", borderCollapse:"separate", borderSpacing:"0 6px", fontSize:12 }}>
           <thead>
             <tr>
-              <th style={{ textAlign:"left", padding:"4px 8px", color:C.text2, fontWeight:700, minWidth:120 }}>Room</th>
+              <th style={{ textAlign:"left", padding:"4px 8px", color:C.text2, fontWeight:700, minWidth:120 }}>{t.room}</th>
               {data.time_blocks?.map((t,i) => <th key={i} style={{ padding:"4px 8px", color:C.text2, fontWeight:600, textAlign:"center", minWidth:70 }}>{t}</th>)}
             </tr>
           </thead>
@@ -377,7 +388,7 @@ export function OccupancyGrid({ data }) {
                 {row.slots?.map((sl,j) => (
                   <td key={j} style={{ padding:"6px 8px", textAlign:"center", background:C.navy, borderRadius:j === row.slots.length - 1 ? "0 8px 8px 0" : 0 }}>
                     <div style={{ borderRadius:999, padding:"6px 8px", background: sl==="available" ? `linear-gradient(135deg, ${C.green}28, ${C.green}14)` : `linear-gradient(135deg, ${C.red}28, ${C.red}14)`, border:`1px solid ${sl==="available" ? C.green+"55" : C.red+"55"}`, boxShadow:`0 2px 6px ${sl==="available" ? C.green+"18" : C.red+"18"}`, color: sl==="available"?C.green:C.red, fontSize:11, fontWeight:800 }}>
-                      {sl==="available"?"Free":"Busy"}
+                      {sl==="available" ? t.free : t.busy}
                     </div>
                   </td>
                 ))}
@@ -403,10 +414,11 @@ export function ActionChips({ data, onChipClick }) {
   )
 }
 
-export function EventList({ data }) {
+export function EventList({ data, lang = "EN" }) {
+  const t = T(lang)
   return (
     <Card>
-      <CardTitle icon={<IconBubble><CalendarDays size={22} /></IconBubble>} title="Today's Events at FSKTM" subtitle="Events currently listed for today" />
+      <CardTitle icon={<IconBubble><CalendarDays size={22} /></IconBubble>} title={t.eventsTitle} subtitle={t.eventsSubtitle} />
       <div style={{ display:"flex", flexDirection:"column", gap:12, marginTop:16 }}>
         {data.events?.map((ev,i) => (
           <div key={i} style={{ padding:"14px 16px", borderRadius:12, background:`linear-gradient(165deg, ${C.card} 0%, #050E1A 100%)`, border:`1px solid ${C.border}`, boxShadow:"inset 0 1px 0 rgba(255,255,255,.05), 0 4px 16px rgba(0,0,0,.25)" }}>
@@ -424,14 +436,14 @@ export function EventList({ data }) {
   )
 }
 
-export function OutOfScopeCard({ data }) {
+export function OutOfScopeCard({ data, lang = "EN" }) {
   return (
     <Card sx={{ textAlign:"center", padding:"36px 28px" }}>
       <div style={{ width:60, height:60, margin:"0 auto 18px", borderRadius:18, background:`linear-gradient(145deg, ${C.red}28, ${C.red}12)`, border:`1px solid ${C.red}50`, boxShadow:`0 0 0 6px ${C.red}0C, 0 12px 32px ${C.red}22`, color:C.red, display:"flex", alignItems:"center", justifyContent:"center" }}>
         <HelpCircle size={28} />
       </div>
       <div style={{ color:C.text, fontSize:17, fontWeight:600, marginBottom:10, lineHeight:1.5 }}>{data.message}</div>
-      <div style={{ color:C.text2, fontSize:13, display:"flex", justifyContent:"center", alignItems:"center", gap:7 }}><Info size={14} /> I can help with room finding, professor availability, room bookings, and today's schedule.</div>
+      <div style={{ color:C.text2, fontSize:13, display:"flex", justifyContent:"center", alignItems:"center", gap:7 }}><Info size={14} /> {T(lang).outOfScopeHelp}</div>
     </Card>
   )
 }

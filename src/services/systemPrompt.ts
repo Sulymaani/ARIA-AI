@@ -87,8 +87,11 @@ ${JSON.stringify({
   todays_events: TODAY_EVENTS,
 }, null, 1)}`
 
+  const langName = language === "BM" ? "Bahasa Melayu" : language === "ZH" ? "Simplified Chinese" : "English"
+
   const dynamicPrompt = `LIVE REQUEST CONTEXT:
 Current time: ${time} | Day: ${day} | UI language: ${language}
+LANGUAGE INSTRUCTION: Respond in ${langName}. Write ALL text values in component JSON (questions, answers, labels, directions, messages, status_label, title, answer, detail, subtitle) in ${langName}. Room codes (Lab 302, DK1) and proper names (Prof. Amirah, Dr. Kamal) stay unchanged. Never mix languages.
 Prior context: ${JSON.stringify(ctx)}
 
 LIVE STATUS SNAPSHOT:

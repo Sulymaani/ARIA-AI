@@ -22,10 +22,11 @@ import {
 type ComponentRendererProps = {
   components: AriaComponent[]
   mode: AriAMode | null
+  language: string
   onOptionSelect: (value: string) => void
   onChipClick: (value: string) => void
 }
-export function ComponentRenderer({ components, mode, onOptionSelect, onChipClick }: ComponentRendererProps) {
+export function ComponentRenderer({ components, mode, language, onOptionSelect, onChipClick }: ComponentRendererProps) {
   const isBalanced = mode === "balanced"
   const mainComps = isBalanced ? components.filter(c=>c.type!=="ContextPanel"&&c.type!=="ActionChips") : components.filter(c=>c.type!=="ActionChips")
   const ctx = isBalanced ? components.find(c=>c.type==="ContextPanel") : null
@@ -36,20 +37,20 @@ export function ComponentRenderer({ components, mode, onOptionSelect, onChipClic
     const key = `${comp.type}-${i}`
     switch(comp.type) {
       case "ClarifyCard":     return <div key={key} style={animStyle}><ClarifyCard data={comp} onOptionSelect={onOptionSelect}/></div>
-      case "StepIndicator":   return <div key={key} style={animStyle}><StepIndicator data={comp}/></div>
-      case "RoomCard":        return <div key={key} style={animStyle}><RoomCard data={comp}/></div>
-      case "ProfessorCard":   return <div key={key} style={animStyle}><ProfessorCard data={comp}/></div>
-      case "OccupancyGrid":   return <div key={key} style={animStyle}><OccupancyGrid data={comp}/></div>
-      case "Timeline":        return <div key={key} style={animStyle}><Timeline data={comp}/></div>
-      case "MapThumbnail":    return <div key={key} style={animStyle}><MapThumbnail data={comp}/></div>
+      case "StepIndicator":   return <div key={key} style={animStyle}><StepIndicator data={comp} lang={language}/></div>
+      case "RoomCard":        return <div key={key} style={animStyle}><RoomCard data={comp} lang={language}/></div>
+      case "ProfessorCard":   return <div key={key} style={animStyle}><ProfessorCard data={comp} lang={language}/></div>
+      case "OccupancyGrid":   return <div key={key} style={animStyle}><OccupancyGrid data={comp} lang={language}/></div>
+      case "Timeline":        return <div key={key} style={animStyle}><Timeline data={comp} lang={language}/></div>
+      case "MapThumbnail":    return <div key={key} style={animStyle}><MapThumbnail data={comp} lang={language}/></div>
       case "AnswerCard":      return <div key={key} style={animStyle}><AnswerCard data={comp}/></div>
-      case "ContactCard":     return <div key={key} style={animStyle}><ContactCard data={comp}/></div>
+      case "ContactCard":     return <div key={key} style={animStyle}><ContactCard data={comp} lang={language}/></div>
       case "DirectoryList":   return <div key={key} style={animStyle}><DirectoryList data={comp}/></div>
       case "MetricStrip":     return <div key={key} style={animStyle}><MetricStrip data={comp}/></div>
-      case "ComparisonTable": return <div key={key} style={animStyle}><ComparisonTable data={comp}/></div>
-      case "StatusDashboard": return <div key={key} style={animStyle}><StatusDashboard data={comp}/></div>
-      case "EventList":       return <div key={key} style={animStyle}><EventList data={comp}/></div>
-      case "OutOfScopeCard":  return <div key={key} style={animStyle}><OutOfScopeCard data={comp}/></div>
+      case "ComparisonTable": return <div key={key} style={animStyle}><ComparisonTable data={comp} lang={language}/></div>
+      case "StatusDashboard": return <div key={key} style={animStyle}><StatusDashboard data={comp} lang={language}/></div>
+      case "EventList":       return <div key={key} style={animStyle}><EventList data={comp} lang={language}/></div>
+      case "OutOfScopeCard":  return <div key={key} style={animStyle}><OutOfScopeCard data={comp} lang={language}/></div>
       default: return null
     }
   }
