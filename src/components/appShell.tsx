@@ -2,6 +2,7 @@ import { Building2, CalendarDays, DoorOpen, Mic, MicOff, Send, Square, UserRound
 
 import { C, modeClr, shadow } from "../theme"
 import { T } from "../utils/translations"
+import { ROOMS, PROFESSORS } from "../data/facultyData"
 
 const iconButtonStyle = (active = false, disabled = false) => ({
   width: 46,
@@ -18,12 +19,34 @@ const iconButtonStyle = (active = false, disabled = false) => ({
   flexShrink: 0,
 })
 
-const getSuggestionChips = (lang: string) => [
-  { label: T(lang).chip_findRoom,   prompt: T(lang).chip_findRoomPrompt,   Icon: Building2 },
-  { label: T(lang).chip_profStatus, prompt: T(lang).chip_profStatusPrompt, Icon: UserRound },
-  { label: T(lang).chip_freeRooms,  prompt: T(lang).chip_freeRoomsPrompt,  Icon: DoorOpen },
-  { label: T(lang).chip_events,     prompt: T(lang).chip_eventsPrompt,     Icon: CalendarDays },
-]
+// Pick a featured lab and professor from real data — shown as suggestion chips
+const featuredLab  = ROOMS.find(r => r.id === "lab_a302") ?? ROOMS.find(r => r.type === "computer_lab")!
+const featuredProf = PROFESSORS.find(p => p.id === "prof_loo") ?? PROFESSORS[0]
+const profLastName = featuredProf.name.split(" ").at(-1)!
+
+const chipText = {
+  lab: {
+    EN: { label: `Find ${featuredLab.short}`, prompt: `Where is ${featuredLab.name}?` },
+    BM: { label: `Cari ${featuredLab.short}`, prompt: `Di mana ${featuredLab.name}?` },
+    ZH: { label: `查找 ${featuredLab.short}`, prompt: `${featuredLab.name}在哪里？` },
+  },
+  prof: {
+    EN: { label: `Prof. ${profLastName} status`, prompt: `Is Prof. ${profLastName} in his office?` },
+    BM: { label: `Status Prof. ${profLastName}`, prompt: `Adakah Prof. ${profLastName} di pejabatnya?` },
+    ZH: { label: `Prof. ${profLastName} 状态`, prompt: `Prof. ${profLastName} 在办公室吗？` },
+  },
+}
+
+const getSuggestionChips = (lang: string) => {
+  const l = (lang in chipText.lab) ? lang : "EN"
+  const t = T(lang)
+  return [
+    { label: chipText.lab[l].label,  prompt: chipText.lab[l].prompt,  Icon: Building2 },
+    { label: chipText.prof[l].label, prompt: chipText.prof[l].prompt, Icon: UserRound },
+    { label: t.chip_freeRooms,       prompt: t.chip_freeRoomsPrompt,  Icon: DoorOpen },
+    { label: t.chip_events,          prompt: t.chip_eventsPrompt,      Icon: CalendarDays },
+  ]
+}
 
 export function Shell({ mode, language, setLanguage, time, onStartOver, showStartOver, textScale, onTextScaleToggle }) {
   const modeColor = mode ? modeClr(mode) : C.text2

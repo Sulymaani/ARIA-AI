@@ -6,8 +6,23 @@ import { callClaude } from "./services/claudeApi"
 import { createLocalFallbackResponse } from "./services/localFallback"
 import { buildSystemPrompt } from "./services/systemPrompt"
 import type { AriAMode, AriaComponent, AriaIntent } from "./types/aria"
+import { PROFESSORS } from "./data/facultyData"
 import { C } from "./theme"
 import { T } from "./utils/translations"
+
+function enrichComponents(components: AriaComponent[]): AriaComponent[] {
+  return components.map(comp => {
+    if (comp.type === "ProfessorCard") {
+      const prof = PROFESSORS.find(p => p.id === (comp as any).professor_id)
+      return prof?.photo ? { ...comp, photo: prof.photo } : comp
+    }
+    if (comp.type === "ContactCard") {
+      const prof = PROFESSORS.find(p => p.name === (comp as any).name || p.email === (comp as any).email)
+      return prof?.photo ? { ...comp, photo: prof.photo } : comp
+    }
+    return comp
+  })
+}
 
 type Turn = {
   id: number
@@ -208,7 +223,7 @@ export default function ARIAApp() {
     setMessages(newMsgs)
     try {
       const result = await callClaude(newMsgs, sys)
-      const newTurn: Turn = { id: ++turnIdRef.current, query: text, components: result.components||[], mode: result.mode, intent: result.intent||null, error: null }
+      const newTurn: Turn = { id: ++turnIdRef.current, query: text, components: enrichComponents(result.components||[]), mode: result.mode, intent: result.intent||null, error: null }
       setTurns(prev => [...prev, newTurn].slice(-5))
       setMode(result.mode)
       setContext(result.context||context)
@@ -217,7 +232,7 @@ export default function ARIAApp() {
     } catch(err) {
       console.error(err)
       const fallback = createLocalFallbackResponse(text, context)
-      const newTurn: Turn = { id: ++turnIdRef.current, query: text, components: fallback.components||[], mode: fallback.mode, intent: (fallback as any).intent||null, error: T(language).fallbackError }
+      const newTurn: Turn = { id: ++turnIdRef.current, query: text, components: enrichComponents(fallback.components||[]), mode: fallback.mode, intent: (fallback as any).intent||null, error: T(language).fallbackError }
       setTurns(prev => [...prev, newTurn].slice(-5))
       setMode(fallback.mode)
       setContext(fallback.context||context)
