@@ -141,8 +141,7 @@ export function ProfessorCard({ data, lang = "EN" }) {
         <StatusBadge status={data.status} label={statusT(lang, data.status)} />
       </div>
       <div style={{ color:C.text2, fontSize:13, marginBottom:10, display:"flex", alignItems:"center", gap:6 }}><MapPin size={14} /> {data.office}</div>
-      {data.status_label && <div style={{ color:C.text2, fontSize:14, marginBottom:8 }}>{data.status_label}</div>}
-      {data.current_activity && <div style={{ color:C.yellow, fontSize:13, marginBottom:12 }}>Now: {data.current_activity}</div>}
+      {data.current_activity && <div style={{ color:C.yellow, fontSize:13, marginBottom:12 }}>{data.current_activity}</div>}
       {data.todays_slots?.length > 0 && (
         <>
           <SectionLabel>{t.todaySchedule}</SectionLabel>
@@ -163,7 +162,10 @@ export function Timeline({ data, lang = "EN" }) {
   const START=8*60, END=19*60, TOTAL=END-START
   const now = nowMins()
   const t = T(lang)
-  const legendKeys = ["in_office","available","teaching","meeting","occupied"] as const
+  const roomOrder   = ["available","occupied"]
+  const profOrder   = ["in_office","teaching","meeting","unavailable"]
+  const order       = data.entity_type === "room" ? roomOrder : profOrder
+  const legendKeys  = order.filter(k => data.slots?.some((s: any) => s.status === k))
   return (
     <Card>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14, gap:12 }}>

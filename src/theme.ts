@@ -22,6 +22,6 @@ export function cardBorder(glowColor = "transparent") {
   return `linear-gradient(165deg, ${C.card} 0%, #050E1A 100%) padding-box, linear-gradient(145deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.03) 40%, ${glowColor} 100%) border-box`
 }
 
-export const statusClr = s => ({ in_office:"#10B981", available:"#10B981", occupied:"#EF4444", unavailable:"#EF4444", teaching:"#F59E0B", meeting:"#F59E0B" }[s] || C.text2)
+export const statusClr = s => ({ in_office:"#10B981", available:"#10B981", occupied:"#EF4444", unavailable:"#6B7280", teaching:"#F59E0B", meeting:"#8B5CF6" }[s] || C.text2)
 export const statusLbl = s => ({ in_office:"In Office", available:"Available", occupied:"Occupied", unavailable:"Unavailable", teaching:"Teaching", meeting:"In Meeting" }[s] || s)
 export const modeClr   = m => ({ guided:C.blue, balanced:C.purple, expert:C.cyan }[m] || C.text2)
