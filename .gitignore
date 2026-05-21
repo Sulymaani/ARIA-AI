@@ -5,5 +5,4 @@ dist-ssr
 .env
 .env.*
 !.env.example
-public/photos/
 download_photos.js
