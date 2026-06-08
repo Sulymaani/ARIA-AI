@@ -3,6 +3,8 @@ import { Building2, CalendarDays, DoorOpen, Mic, MicOff, Send, Square, UserRound
 import { C, modeClr, shadow } from "../theme"
 import { T } from "../utils/translations"
 import { ROOMS, PROFESSORS } from "../data/facultyData"
+import { ModeIndicator } from "./ModeIndicator"
+import type { AriAMode } from "../types/aria"
 
 const iconButtonStyle = (active = false, disabled = false) => ({
   width: 46,
@@ -48,7 +50,7 @@ const getSuggestionChips = (lang: string) => {
   ]
 }
 
-export function Shell({ mode, language, setLanguage, time, onStartOver, showStartOver, textScale, onTextScaleToggle }) {
+export function Shell({ mode, language, setLanguage, time, onStartOver, showStartOver, textScale, onTextScaleToggle, modePref, setModePref }: { mode: AriAMode | null, language: string, setLanguage: (l: string) => void, time: string, onStartOver: () => void, showStartOver: boolean, textScale: number, onTextScaleToggle: () => void, modePref: AriAMode | null, setModePref: (p: AriAMode | null) => void }) {
   const modeColor = mode ? modeClr(mode) : C.text2
 
   return (
@@ -79,6 +81,7 @@ export function Shell({ mode, language, setLanguage, time, onStartOver, showStar
         >
           Aa
         </button>
+        <ModeIndicator mode={mode} modePref={modePref} setModePref={setModePref} language={language} />
         <div style={{ display:"flex", gap:2, background:C.card, borderRadius:8, padding:3, border:`1px solid ${C.border}` }}>
           {["EN","BM","ZH"].map(l => (
             <button key={l} onClick={()=>setLanguage(l)} style={{ background: l===language?C.cyan:"transparent", border:"none", borderRadius:6, padding:"4px 10px", color: l===language?C.navy:C.text2, fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s" }}>{l}</button>

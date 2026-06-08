@@ -77,6 +77,13 @@ type Translations = {
   eventsSubtitle: string
   // OutOfScopeCard fallback
   outOfScopeHelp: string
+  // Mode indicator
+  viewLabel: string
+  modeAuto: string
+  modeGuided: string
+  modeBalanced: string
+  modeExpert: string
+  switchedTo: (label: string) => string
 }
 
 const EN: Translations = {
@@ -146,6 +153,12 @@ const EN: Translations = {
   eventsTitle: "Today's Events at FSKTM",
   eventsSubtitle: "Events currently listed for today",
   outOfScopeHelp: "I can help with room finding, professor availability, room bookings, and today's schedule.",
+  viewLabel: "View",
+  modeAuto: "Auto",
+  modeGuided: "Step-by-step",
+  modeBalanced: "Standard",
+  modeExpert: "Detailed",
+  switchedTo: (label) => `Switched to ${label} view`,
 }
 
 const BM: Translations = {
@@ -215,6 +228,12 @@ const BM: Translations = {
   eventsTitle: "Acara Hari Ini di FSKTM",
   eventsSubtitle: "Acara yang disenaraikan untuk hari ini",
   outOfScopeHelp: "Saya boleh membantu mencari bilik, ketersediaan profesor, tempahan bilik, dan jadual hari ini.",
+  viewLabel: "Paparan",
+  modeAuto: "Auto",
+  modeGuided: "Langkah demi langkah",
+  modeBalanced: "Standard",
+  modeExpert: "Terperinci",
+  switchedTo: (label) => `Bertukar ke paparan ${label}`,
 }
 
 const ZH: Translations = {
@@ -284,6 +303,12 @@ const ZH: Translations = {
   eventsTitle: "FSKTM 今日活动",
   eventsSubtitle: "今日活动列表",
   outOfScopeHelp: "我可以帮助查找教室、教授状态、教室预定以及今日课程安排。",
+  viewLabel: "视图",
+  modeAuto: "自动",
+  modeGuided: "逐步",
+  modeBalanced: "标准",
+  modeExpert: "详细",
+  switchedTo: (label) => `已切换至${label}视图`,
 }
 
 const dict: Record<string, Translations> = { EN, BM, ZH }

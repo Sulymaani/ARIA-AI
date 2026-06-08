@@ -3,7 +3,7 @@ import { getProfStatus, getRoomStatus, getTodayKey } from "../utils/schedule"
 
 const STATIC_PROMPT_VERSION = "aria-static-prompt-v2"
 
-export function buildSystemPrompt(ctx, language, time, day) {
+export function buildSystemPrompt(ctx, language, time, day, modePref = null) {
   const liveProfessors = PROFESSORS.map(p => ({
     id: p.id,
     name: p.name,
@@ -89,10 +89,14 @@ ${JSON.stringify({
 
   const langName = language === "BM" ? "Bahasa Melayu" : language === "ZH" ? "Simplified Chinese" : "English"
 
+  const modeOverride = modePref
+    ? `\nMODE OVERRIDE: The user has selected ${modePref} mode. Set mode to ${modePref}. Do not reclassify. Choose components appropriate to ${modePref}. Set modeChanged to false.`
+    : ""
+
   const dynamicPrompt = `LIVE REQUEST CONTEXT:
 Current time: ${time} | Day: ${day} | UI language: ${language}
 LANGUAGE INSTRUCTION: Respond in ${langName}. Write ALL text values in component JSON (questions, answers, labels, directions, messages, status_label, title, answer, detail, subtitle) in ${langName}. Room codes (Lab 302, DK1) and proper names (Prof. Amirah, Dr. Kamal) stay unchanged. Never mix languages.
-Prior context: ${JSON.stringify(ctx)}
+Prior context: ${JSON.stringify(ctx)}${modeOverride}
 
 LIVE STATUS SNAPSHOT:
 ${JSON.stringify({ professors: liveProfessors, rooms: liveRooms }, null, 1)}`

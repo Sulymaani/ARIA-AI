@@ -7,7 +7,7 @@ import { createLocalFallbackResponse } from "./services/localFallback"
 import { buildSystemPrompt } from "./services/systemPrompt"
 import type { AriAMode, AriaComponent, AriaIntent } from "./types/aria"
 import { PROFESSORS } from "./data/facultyData"
-import { C } from "./theme"
+import { C, modeClr } from "./theme"
 import { T } from "./utils/translations"
 
 function enrichComponents(components: AriaComponent[]): AriaComponent[] {
@@ -29,6 +29,7 @@ type Turn = {
   query: string
   components: AriaComponent[]
   mode: AriAMode
+  modeChanged?: boolean
   intent?: AriaIntent | null
   error?: string | null
 }
@@ -42,6 +43,8 @@ function getTurnOpacity(idx: number, total: number): number {
 export default function ARIAApp() {
   const [phase, setPhase] = useState<"welcome"|"loading"|"conversation">("welcome")
   const [mode, setMode] = useState<AriAMode|null>(null)
+  const [modePref, setModePref] = useState<AriAMode|null>(null)
+  const [dismissedModeChanges, setDismissedModeChanges] = useState<Set<number>>(new Set())
   const [language, setLanguage] = useState("EN")
   const [turns, setTurns] = useState<Turn[]>([])
   const [pendingQuery, setPendingQuery] = useState("")
@@ -128,6 +131,8 @@ export default function ARIAApp() {
     setMessages([])
     setContext({ turn:0, intent_history:[], context_summary:"No prior context." })
     setMode(null)
+    setModePref(null)
+    setDismissedModeChanges(new Set())
     setInputText("")
     setPendingQuery("")
     setShowIdleOverlay(false)
@@ -218,12 +223,12 @@ export default function ARIAApp() {
     startIdleTimer()
 
     const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
-    const sys = buildSystemPrompt(context, language, time, days[new Date().getDay()])
+    const sys = buildSystemPrompt(context, language, time, days[new Date().getDay()], modePref)
     const newMsgs = [...baseMsgs, { role:"user", content:text }]
     setMessages(newMsgs)
     try {
       const result = await callClaude(newMsgs, sys)
-      const newTurn: Turn = { id: ++turnIdRef.current, query: text, components: enrichComponents(result.components||[]), mode: result.mode, intent: result.intent||null, error: null }
+      const newTurn: Turn = { id: ++turnIdRef.current, query: text, components: enrichComponents(result.components||[]), mode: result.mode, modeChanged: result.modeChanged, intent: result.intent||null, error: null }
       setTurns(prev => [...prev, newTurn].slice(-5))
       setMode(result.mode)
       setContext(result.context||context)
@@ -239,7 +244,7 @@ export default function ARIAApp() {
       setMessages([...newMsgs, { role:"assistant", content:JSON.stringify(fallback) }])
       setPhase("conversation")
     }
-  }, [context, language, time, startIdleTimer])
+  }, [context, language, time, startIdleTimer, modePref])
 
   const handleSend = useCallback((text: string) => {
     sendQuery(text, messages)
@@ -265,6 +270,14 @@ export default function ARIAApp() {
       return next
     })
   }, [])
+
+  const modeDisplayLabel = (m: AriAMode, lang: string): string => {
+    const t = T(lang)
+    if (m === "guided") return t.modeGuided
+    if (m === "balanced") return t.modeBalanced
+    if (m === "expert") return t.modeExpert
+    return ""
+  }
 
   const queryLabel = (text: string, turnId?: number, isCollapsed?: boolean) => (
     <div
@@ -297,6 +310,7 @@ export default function ARIAApp() {
         mode={mode} language={language} setLanguage={setLanguage} time={time}
         onStartOver={handleReset} showStartOver={phase !== "welcome"}
         textScale={textScale} onTextScaleToggle={() => setTextScale(s => s === 1 ? 1.25 : 1)}
+        modePref={modePref} setModePref={setModePref}
       />
 
       {/* paddingTop outside the zoom so header clearance is unaffected by scale */}
@@ -336,6 +350,18 @@ export default function ARIAApp() {
                         </div>
                       )}
                       <div style={{ opacity: getTurnOpacity(idx, turns.length), transition:"opacity 0.4s" }}>
+                        {turn.modeChanged && modePref === null && !dismissedModeChanges.has(turn.id) && (
+                          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
+                            <div style={{ flex:1, background:`${modeClr(turn.mode)}14`, border:`1px solid ${modeClr(turn.mode)}40`, borderRadius:8, padding:"5px 12px", color:modeClr(turn.mode), fontSize:11, fontWeight:600 }}>
+                              {T(language).switchedTo(modeDisplayLabel(turn.mode, language))}
+                            </div>
+                            <button
+                              onClick={() => setDismissedModeChanges(prev => new Set([...prev, turn.id]))}
+                              aria-label="Dismiss"
+                              style={{ background:"transparent", border:"none", color:C.text2, cursor:"pointer", fontSize:16, padding:"2px 8px", fontFamily:"inherit", lineHeight:1, flexShrink:0 }}
+                            >×</button>
+                          </div>
+                        )}
                         {queryLabel(turn.query, turn.id, isCollapsed)}
                         {!isCollapsed && (
                           <>
